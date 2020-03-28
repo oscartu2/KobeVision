@@ -1,0 +1,82 @@
+extends layout
+
+block content
+  h1= title
+  p CPSC 448 Directed Studies Project
+
+  // Wrapper
+  #wrapper
+
+    // TEAM INFO
+    #teamInfo1
+      h2 Team Info
+      p
+        strong Abbrevation:
+        |  <span id='teamAbbreviation1'></span>
+        br
+        strong City:
+        |  <span id='teamCity1'></span>
+        br
+        strong Conference:
+        |  <span id='teamConference1'></span>
+        br
+        strong Division:
+        |  <span id='teamDivision1'></span> 
+    #teamInfo2
+      h2 VS.
+      p
+        strong Abbrevation:
+        |  <span id='teamAbbreviation1'></span>
+        br
+        strong City:
+        |  <span id='teamCity1'></span>
+        br
+        strong Conference:
+        |  <span id='teamConference1'></span>
+        br
+        strong Division:
+        |  <span id='teamDivision1'></span>
+    // /TEAM INFO
+
+    button#btnPredict Predict 
+    // TEAMS LIST
+    #teamList
+      h2 Teams List
+      table
+        thead
+          th id
+          th Team Name
+        tbody
+    // /TEAMS LIST
+
+    // GAMES LIST
+    #gameList
+      h2 Games List
+      table
+        thead
+          th id
+          th Date
+          th Home
+          th Home Score
+          th Away
+          th Away Score
+        tbody
+    // /GAMES LIST
+
+    // GET STATS
+    h2 Get Stats
+    #getStats
+      fieldset
+        input#inputUserName(type='text', placeholder='YYYY-MM-DD')
+        input#inputUserEmail(type='text', placeholder='Game IDs')
+        br
+        input#inputUserFullname(type='text', placeholder='Page')
+        input#inputUserAge(type='text', placeholder='Results per page')
+        br
+        input#inputUserLocation(type='text', placeholder='Player IDs')
+        input#inputUserGender(type='text', placeholder='gender')
+        br
+        button#btnGetStats Get Stats
+    // /GET STATS
+
+  // /WRAPPER
