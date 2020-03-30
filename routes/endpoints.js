@@ -4,10 +4,9 @@ var request = require("request");
 
 var teamOptions = {
   method: 'GET',
-  url: 'https://free-nba.p.rapidapi.com/teams',
-  qs: {page: '0'},
+  url: 'https://api-nba-v1.p.rapidapi.com/teams/league/standard',
   headers: {
-    'x-rapidapi-host': 'free-nba.p.rapidapi.com',
+    'x-rapidapi-host': 'api-nba-v1.p.rapidapi.com',
     'x-rapidapi-key': '9b33bffed0msh79c7ba3574089adp1341ffjsnbeb1a39b1229'
   }
 };
@@ -38,12 +37,13 @@ router.get('/allTeams', function(req, res, next) {
 	request(teamOptions, function (error, response, body) {
 		if (error) throw new Error(error);
     let obj = JSON.parse(body);
-		res.json(obj.data);
+		res.json(obj.api.teams);
 	});
 });
 
 /* GET games from /games. */
 router.get('/allGames', function(req, res, next) {
+  gameOptions.qs.Seasons = JSON.parse(gameOptions.qs.Seasons);
   request(gameOptions, function (error, response, body) {
     console.log(response.req.path);
     if (error) throw new Error(error);

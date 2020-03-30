@@ -7,66 +7,36 @@ block content
   // Wrapper
   #wrapper
 
-    // TEAM INFO
-    #teamInfo1
-      h2 Team Info
-      p
-        strong Abbrevation:
-        |  <span id='teamAbbreviation1'></span>
-        br
-        strong City:
-        |  <span id='teamCity1'></span>
-        br
-        strong Conference:
-        |  <span id='teamConference1'></span>
-        br
-        strong Division:
-        |  <span id='teamDivision1'></span> 
-    #teamInfo2
-      h2 VS.
-      p
-        strong Abbrevation:
-        |  <span id='teamAbbreviation1'></span>
-        br
-        strong City:
-        |  <span id='teamCity1'></span>
-        br
-        strong Conference:
-        |  <span id='teamConference1'></span>
-        br
-        strong Division:
-        |  <span id='teamDivision1'></span>
-    // /TEAM INFO
+    // TEAM INFO CARD
+    div.card1(id='teamCard1')
+      h2 Team 1
+      img.cardLogo(id='teamLogo1', src='')
+      div.container
+        h4(id='card1TeamName')
+          strong
 
-    button#btnPredict Predict 
+    div.card2(id='teamCard2')
+      h2 Team 2
+      img.cardLogo(id='teamLogo2', src='')
+      div.container
+        h4(id='card2TeamName')
+          strong
+    // /TEAM INFO CARD     
+    
     // TEAMS LIST
     #teamList
       h2 Teams List
       table
         thead
-          th id
+          th Team ID
           th Team Name
+          th Logo
         tbody
     // /TEAMS LIST
 
-    // GAMES LIST
-    #gameList
-      h2 Games List
-      table
-        thead
-          th id
-          th Date
-          th Home
-          th Home Score
-          th Away
-          th Away Score
-        tbody
-    // /GAMES LIST
-
     // GET STATS
-    h2 Get Stats
     #getStats
-      fieldset
+      h2 Get Stats
         input#inputUserName(type='text', placeholder='YYYY-MM-DD')
         input#inputUserEmail(type='text', placeholder='Game IDs')
         br
@@ -76,7 +46,9 @@ block content
         input#inputUserLocation(type='text', placeholder='Player IDs')
         input#inputUserGender(type='text', placeholder='gender')
         br
-        button#btnGetStats Get Stats
+      button#btnPredict Predict 
+      button#btnGetStats Get Stats
     // /GET STATS
+
 
   // /WRAPPER

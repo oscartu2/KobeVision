@@ -15,15 +15,62 @@ a {
 	padding-left:312px;
 }
 
-#teamList {
-	margin:0 0 30px 0;
+#teamCard1 {
+	width:250px;
+	height: 500px;
+	display:inline-block;
 	position: absolute;
-	padding-top: 10px;
 	left: 5em;
 }
+	#teamCard1 h2 {
+		padding:15px;
+		border:1px solid #CCC;
+		background:rgba(80,120,255,0.05);
+	}
+
+	#teamCard1 h4 {
+		padding:15px;
+		border:0px;
+		background:rgba(0,0,0,0);
+		position: absolute;
+		top: 300px;
+	}
+
+#teamCard2 {
+	width:250px;
+	height: 500px;
+	display:inline-block;
+	position: relative;
+	left: 5em;
+}
+	#teamCard2 h2 {
+		padding:15px;
+		border:1px solid #CCC;
+		background:rgba(80,120,255,0.05);
+	}
+
+	#teamCard2 h4 {
+		padding:15px;
+		border:0px;
+		background:rgba(0,0,0,0);
+		position: absolute;
+		top: 300px;
+	}
+
+#teamList {
+	display: inline-block;
+	position: relative;
+	left: 15em;
+}
+	#teamList h2 {
+		padding:15px;
+		border:1px solid #CCC;
+		background:rgba(80,120,255,0.05);
+	}
+
 	#teamList table {
 		border-collapse:separate;
-		border-spacing:1px;
+		border-spacing:2px;
 		background:#CCC;
 	}
 		#teamList table th {
@@ -43,59 +90,48 @@ a {
 				text-align:center;
 			}
 
-#gameList {
-	margin:0 0 30px 0;
-	position:relative;
-	padding-top: 10px;
-}
-	#gameList table {
-		border-collapse:separate;
-		border-spacing:1px;
-		background:#CCC;
-	}
-		#gameList table th {
-			background:#EEE;
-			font-weight:600;
-			padding:10px 20px;
-			text-align:center;
-		}
-		#gameList table tbody {
-			padding:0; margin:0;
-			border-collapse:collapse;
-			border-spacing:0px;
-		}
-			#gameList table td {
-				background:#FFF;
-				padding:5px 10px;
-				text-align:center;
-			}
 
-#teamInfo1 {
-	width:250px;
-	display:inline-block;
+#getStats {
+	display: inline-block;
 	position: absolute;
-	padding-top: 10px;
+	top: 700px;
 	left: 5em;
-}
-	#teamInfo1 p {
-		padding:15px;
-		border:1px solid #CCC;
-		background:rgba(80,120,255,0.05);
-	}
-
-#teamInfo2 {
-	width:250px;
-	display:inline-block;
-	position: relative;
-	padding-top: 10px;
-}
-	#teamInfo2 p {
-		padding:15px;
-		border:1px solid #CCC;
-		background:rgba(80,120,255,0.05);
-	}
-
-fieldset {
-	border:0;
+	border:0px;
 	padding:0; margin:0;
+}
+
+img {
+  display: block;
+  max-width:100px;
+  max-height:100px;
+  width: auto;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card1 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.card2 {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card1:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.5);
+}
+
+.card2:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.5);
+}
+
+/* Add some padding inside the card container */
+.container {
+  padding: 20px 20px 20px 20px;
 }

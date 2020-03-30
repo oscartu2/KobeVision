@@ -1,7 +1,8 @@
 // TeamList data array for filling in info box
 var teamListData = [];
 var gameListData = [];
-var currentlySelected = 1;
+var currentlySelected = "1";
+
 // DOM Ready =============================================================
 $(document).ready(function() {
 
@@ -11,11 +12,21 @@ $(document).ready(function() {
   // Populate the game table on initial page load
   populateGameTable();
 
-  $('#teamInfo1 p').on('click', console.log("team1"));
-  $('#teamInfo2 p').on('click', console.log("team2"));
+  $('#teamCard1').on('click', function() {
+    currentlySelected = "1";
+    $('.card1').css({"box-shadow": "0 8px 32px 0 rgba(61, 193, 252, 1)"});
+    $('.card2').css({"box-shadow": "0 4px 8px 0 rgba(0,0,0,0.2)"});
+    $('.card2:hover').css({"box-shadow": "0 8px 16px 0 rgba(0,0,0,0.5)"});
+  });
 
-  // Select team 1
-  $('#teamList table tbody').on('click', 'td a.linkshowteam', showTeamInfo);
+  $('#teamCard2').on('click', function() {
+    currentlySelected = "2";
+    $('.card2').css({"box-shadow": "0 8px 32px 0 rgba(61, 193, 252, 1)"});
+    $('.card1').css({"box-shadow": "0 4px 8px 0 rgba(0,0,0,0.2)"});
+    $('.card1:hover').css({"box-shadow": "0 8px 16px 0 rgba(0,0,0,0.5)"});
+  });
+
+  $('#teamList table tbody').on('click', 'td a.linkshowteam', fillCard);
 
 
   // Predict button click
@@ -39,10 +50,16 @@ function populateTeamTable() {
     teamListData = data;
     // For each item in our JSON, add a table row and cells to the content string
     $.each(data, function() {
-      tableContent += '<tr>';
-      tableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this.id + '">' + this.id + '</a></td>';
-      tableContent += '<td><a href="#" class="linkshowteam" rel="' + this.full_name + '">' + this.full_name + '</a></td>';
-      tableContent += '</tr>';
+      if (this.nbaFranchise === "1" && this.teamId !== "37") {
+        tableContent += '<tr>';
+        tableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this.teamId + '">' + this.teamId + '</a></td>';
+        tableContent += '<td><a href="#" class="linkshowteam" rel="' + this.fullName + '">' + this.fullName + '</a></td>';
+        if (this.teamId === "10") {
+          this.logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Pistons_logo17.svg/1024px-Pistons_logo17.svg.png";
+        };
+        tableContent += '<td><img src=' + this.logo + ' alt="Team Logo"></td>';
+        tableContent += '</tr>';
+      };
     });
 
     // Inject the whole content string into our existing HTML table
@@ -76,8 +93,11 @@ function populateGameTable() {
   });
 };
 
-// Show Team Info
-function showTeamInfo(event) {
+function setCurrentlySelected(cardNumber) {
+  currentlySelected = cardNumber;
+}
+
+function fillCard(event) {
 
   // Prevent Link from Firing
   event.preventDefault();
@@ -86,44 +106,21 @@ function showTeamInfo(event) {
   var thisTeamName = $(this).attr('rel');
 
   // Get Index of object based on id value
-  var arrayPosition = teamListData.map(function(arrayItem) { return arrayItem.full_name; }).indexOf(thisTeamName);
+  var arrayPosition = teamListData.map(function(arrayItem) { return arrayItem.fullName; }).indexOf(thisTeamName);
 
   // Get our Team Object
   var thisTeamObject = teamListData[arrayPosition];
 
-  
-
-  // Populate Info Box
-  $('#teamAbbreviation1').text(thisTeamObject.abbreviation);
-  $('#teamCity1').text(thisTeamObject.city);
-  $('#teamConference1').text(thisTeamObject.conference);
-  $('#teamDivision1').text(thisTeamObject.division);
+  var teamLogo = '#teamLogo' + currentlySelected;
+  var teamName = '#card' + currentlySelected + 'TeamName';
+  $(teamLogo).css({"max-width":"200px", "max-height":"200px"});
+  $(teamLogo).attr('src', thisTeamObject.logo);
+  $(teamName).css({"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"});
+  $(teamName).text(thisTeamObject.fullName);
 };
 
-// Show Team Info
-function showTeamInfo2(event) {
+function predict(event) {
 
-  // Prevent Link from Firing
-  event.preventDefault();
-
-  // Retrieve username from link rel attribute
-  var thisTeamName = $(this).attr('rel');
-
-  // Get Index of object based on id value
-  var arrayPosition = teamListData.map(function(arrayItem) { return arrayItem.full_name; }).indexOf(thisTeamName);
-
-  // Get our Team Object
-  var thisTeamObject = teamListData[arrayPosition];
-
-  // Populate Info Box
-  $('#teamAbbreviation2').text(thisTeamObject.abbreviation);
-  $('#teamCity2').text(thisTeamObject.city);
-  $('#teamConference2').text(thisTeamObject.conference);
-  $('#teamDivision2').text(thisTeamObject.division);
-};
-
-function predict(team1, team2) {
-  console.log("ADAM!");
 }
 
 function getStats(event) {
