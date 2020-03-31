@@ -11,17 +11,6 @@ var teamOptions = {
   }
 };
 
-var gameOptions = {
-  method: 'GET',
-  url: 'https://free-nba.p.rapidapi.com/games',
-  qs: {Seasons: '\\[2015\]', page: '0', per_page: '25'},
-  qsStringifyOptions: {arrayFormat: 'brackets'},
-  headers: {
-    'x-rapidapi-host': 'free-nba.p.rapidapi.com',
-    'x-rapidapi-key': '9b33bffed0msh79c7ba3574089adp1341ffjsnbeb1a39b1229'
-  }
-};
-
 var statsOptions = {
   method: 'GET',
   url: 'https://free-nba.p.rapidapi.com/stats',
@@ -41,15 +30,5 @@ router.get('/allTeams', function(req, res, next) {
 	});
 });
 
-/* GET games from /games. */
-router.get('/allGames', function(req, res, next) {
-  gameOptions.qs.Seasons = JSON.parse(gameOptions.qs.Seasons);
-  request(gameOptions, function (error, response, body) {
-    console.log(response.req.path);
-    if (error) throw new Error(error);
-    let obj = JSON.parse(body);
-    res.json(obj.data);
-  });
-});
 
 module.exports = router;

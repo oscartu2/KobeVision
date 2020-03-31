@@ -28,13 +28,13 @@ a {
 		background:rgba(80,120,255,0.05);
 	}
 
-	#teamCard1 h4 {
+/*	#teamCard1 h4 {
 		padding:15px;
 		border:0px;
 		background:rgba(0,0,0,0);
 		position: absolute;
 		top: 300px;
-	}
+	}*/
 
 #teamCard2 {
 	width:250px;
@@ -49,13 +49,13 @@ a {
 		background:rgba(80,120,255,0.05);
 	}
 
-	#teamCard2 h4 {
+/*	#teamCard2 h4 {
 		padding:15px;
 		border:0px;
 		background:rgba(0,0,0,0);
 		position: absolute;
 		top: 300px;
-	}
+	}*/
 
 #teamList {
 	display: inline-block;
@@ -132,6 +132,18 @@ img {
 }
 
 /* Add some padding inside the card container */
-.container {
-  padding: 20px 20px 20px 20px;
+.container1 {
+	padding:15px;
+	border:0px;
+	background:rgba(0,0,0,0);
+	position: absolute;
+	top: 300px;
+}
+
+.container2 {
+	padding:15px;
+	border:0px;
+	background:rgba(0,0,0,0);
+	position: absolute;
+	top: 300px;
 }
