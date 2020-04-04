@@ -10,6 +10,7 @@ block content
     // TEAM INFO CARD
     div.card1(id='teamCard1')
       h2 Team 1
+        select.cardYears(id='card1Year')
       img.cardLogo(id='teamLogo1', src='')
       div.container1
         h4(id='card1TeamName')
@@ -17,6 +18,7 @@ block content
 
     div.card2(id='teamCard2')
       h2 Team 2
+        select.cardYears(id='card2Year')
       img.cardLogo(id='teamLogo2', src='')
       div.container2
         h4(id='card2TeamName')
@@ -34,21 +36,18 @@ block content
         tbody
     // /TEAMS LIST
 
-    // GET STATS
-    #getStats
-      h2 Get Stats
-        input#inputUserName(type='text', placeholder='YYYY-MM-DD')
-        input#inputUserEmail(type='text', placeholder='Game IDs')
-        br
-        input#inputUserFullname(type='text', placeholder='Page')
-        input#inputUserAge(type='text', placeholder='Results per page')
-        br
-        input#inputUserLocation(type='text', placeholder='Player IDs')
-        input#inputUserGender(type='text', placeholder='gender')
-        br
-      button#btnPredict Predict 
-      button#btnGetStats Get Stats
-    // /GET STATS
+    // PREDICTION METHOD
+    div.dropdown
+      h2 Prediction Method
+        select.dropdown-content(id='methods')
+          option(selected='true') Please Select
+          option(id='ratio') Win/Loss Ratio
+          option(id='starting') Starting 5 PER
+          option(id='team') Team Stats
+          option(id='model') Fancy ML?
+        p(id='predictionMethod') Please select a method
+    // /PREDICTION METHOD
+
 
 
   // /WRAPPER

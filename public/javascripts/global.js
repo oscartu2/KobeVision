@@ -25,14 +25,17 @@ $(document).ready(function() {
     $('.card1:hover').css({"box-shadow": "0 8px 16px 0 rgba(0,0,0,0.5)"});
   });
 
+  $(document).on('change','.dropdown-content', function() {
+    var methodElement = document.getElementById('methods');
+    var method = methodElement.options[methodElement.selectedIndex].text;
+    $('#predictionMethod').text(this.value);
+  });
+
   $('#teamList table tbody').on('click', 'td a.linkshowteam', fillCard);
 
 
   // Predict button click
   $('#btnPredict').on('click', predict);
-
-  // Get Stats button click
-  $('#btnGetStats').on('click', getStats);
 
 });
 
@@ -83,60 +86,28 @@ function fillCard(event) {
   var teamLogo = '#teamLogo' + currentlySelected;
   var teamName = '#card' + currentlySelected + 'TeamName';
   var teamInfo = '#card' + currentlySelected + 'Info';
+  var teamYear = 'card' + currentlySelected + 'Year';
   $(teamLogo).css({"max-width":"200px", "max-height":"200px"});
   $(teamLogo).attr('src', thisTeamObject.logo);
   $(teamName).text(thisTeamObject.fullName);
   $('.container'+currentlySelected).css({"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"});
   $(teamInfo).text("TEAM EFFICIENCY RATING: 50\n WIN AVG \n LOSE AVG");
+  
+  var yearElement = document.getElementById(teamYear);
+  var seasons = 20;
+  for (var i = 0; i < seasons; i++) {
+    var newOption = document.createElement("option");
+    if (i < 10) {
+      newOption.text = "200" + i;
+    } else {
+      newOption.text = "20" + i;
+    }
+    yearElement.add(newOption);
+  }
 };
 
 function predict(event) {
 
 }
-
-function getStats(event) {
-
-  // jQuery AJAX call for JSON
-  $.getJSON( '/stats/allGames', function ( data ) {
-    gameListData = data;
-    // For each item in our JSON, add a table row and cells to the content string
-    $.each(data, function() {
-      tableContent += '<tr>';
-      tableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this.id + '">' + this.id + '</a></td>';
-      tableContent += '<td>'+ this.date.split("T")[0] + '</td>';
-      tableContent += '<td>'+ this.home_team.full_name + '</td>';
-      tableContent += '<td>'+ this.home_team_score + '</td>';
-      tableContent += '<td>'+ this.visitor_team.full_name + '</td>';
-      tableContent += '<td>'+ this.visitor_team_score + '</td>';
-      tableContent += '</tr>';
-    });
-
-    // Inject the whole content string into our existing HTML table
-    $('#gameList table tbody').html(tableContent);
-  });
-
-  // Prevent Link from Firing
-  event.preventDefault();
-
-  // Retrieve username from link rel attribute
-  var thisTeamName = $(this).attr('rel');
-
-  // Get Index of object based on id value
-  var arrayPosition = teamListData.map(function(arrayItem) { return arrayItem.full_name; }).indexOf(thisTeamName);
-
-  // Get our Team Object
-  var thisTeamObject = teamListData[arrayPosition];
-
-  
-
-  // Populate Info Box
-  $('#teamAbbreviation1').text(thisTeamObject.abbreviation);
-  $('#teamCity1').text(thisTeamObject.city);
-  $('#teamConference1').text(thisTeamObject.conference);
-  $('#teamDivision1').text(thisTeamObject.division);
-
-}
-
-
 
 
