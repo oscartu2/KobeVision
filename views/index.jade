@@ -15,6 +15,7 @@ block content
       div.container1
         h4(id='card1TeamName')
         p(id='card1Info')
+      button(id='showPlayers1') Show Players
 
     div.card2(id='teamCard2')
       h2 Team 2
@@ -23,19 +24,9 @@ block content
       div.container2
         h4(id='card2TeamName')
         p(id='card2Info')
+      button(id='showPlayers2') Show Players
     // /TEAM INFO CARD     
-    
-    // TEAMS LIST
-    #teamList
-      h2 Teams List
-      table
-        thead
-          th Team ID
-          th Team Name
-          th Logo
-        tbody
-    // /TEAMS LIST
-
+  
     // PREDICTION METHOD
     div.dropdown
       h2 Prediction Method
@@ -47,6 +38,36 @@ block content
           option(id='model') Fancy ML?
         p(id='predictionMethod') Please select a method
     // /PREDICTION METHOD
+
+    // TEAMS LIST
+    #teamList
+      h2 Teams List
+      table
+        thead
+          th Team ID
+          th Team Name
+          th Logo
+        tbody
+    // /TEAMS LIST
+
+    // PLAYERS LIST
+    #playerList
+      h2 Players List
+      table
+        thead
+          th Player ID
+          th First Name
+          th Last Name
+          th Number
+          th Position
+          th Date of Birth (Current Age)
+          th Height
+          th Weight
+          th NBA Start
+          th College Name
+          th Affiliation
+        tbody
+    // /PLAYERS LIST
 
 
 
