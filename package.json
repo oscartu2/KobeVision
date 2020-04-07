@@ -7,13 +7,18 @@
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
+    "csv-parser": "^2.3.2",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "fetch": "^1.1.0",
+    "fs": "0.0.1-security",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "jquery": "^3.4.1",
+    "mongo": "^0.1.0",
+    "monk": "^7.1.2",
     "morgan": "~1.9.1",
+    "require": "^2.4.20",
     "unirest": "^0.6.0"
   }
 }

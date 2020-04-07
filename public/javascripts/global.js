@@ -4,7 +4,8 @@ var gameListData = [];
 var currentlySelected = "1";
 var currentTeamId = "";
 var currentTeamName = "";
-var MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
+const MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
+
 
 // DOM Ready =============================================================
 $(document).ready(function() {
@@ -144,21 +145,30 @@ function fillCard(event) {
   $(teamInfo).text("TEAM EFFICIENCY RATING: 50\n WIN AVG \n LOSE AVG");
   
   var yearElement = document.getElementById(teamYear);
-  var seasons = 20;
-  for (var i = 0; i < seasons; i++) {
-    var newOption = document.createElement("option");
-    if (i < 10) {
-      newOption.text = "200" + i;
-    } else {
-      newOption.text = "20" + i;
+  
+  // Get seasons;
+  $.getJSON( '/db/seasons/' + currentTeamId, function ( data ) {
+    console.log(data);
+    // Get all the seasons
+    var seasons = [];
+    for (var row of data) {
+      seasons.push(row.Season);
     }
-    yearElement.add(newOption);
-  };
+
+    // Sort it by most recent season
+    seasons.sort(function(a, b) {
+      return Number(b.substring(0,4)) - Number(a.substring(0,4));
+    });
+    console.log(seasons);
+    // Add each season to year selector
+    $.each(seasons, function() {
+      var newOption = document.createElement("option");
+      newOption.text = this;
+      yearElement.add(newOption);
+    });
+  });
 };
 
-function predict(event) {
-
-}
 
 function calculateAge(dob) { 
     var date_array = dob.split('-')
