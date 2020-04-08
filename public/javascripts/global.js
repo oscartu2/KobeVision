@@ -34,10 +34,16 @@ $(document).ready(function() {
     $('#predictionMethod').text(this.value);
   });
 
-  $(document).on('change', '.cardYears', function () {
-    var yearElement = document.getElementById('card' + currentTeamId + 'Year');
+  $(document).on('change', '.card1Years', function () {
+    var yearElement = document.getElementById('card1Year');
     var year = yearElement.options[yearElement.selectedIndex].text;
-    getStatistics('#card' + currentTeamId + 'Info', currentTeamId, year);
+    getStatistics('#card' + currentlySelected + 'Info', currentTeamId, year);
+  });
+
+  $(document).on('change', '.card2Years', function () {
+    var yearElement = document.getElementById('card2Year');
+    var year = yearElement.options[yearElement.selectedIndex].text;
+    getStatistics('#card' + currentlySelected + 'Info', currentTeamId, year);
   });
 
   $('#teamList table tbody').on('click', 'td a.linkshowteam', fillCard);
@@ -46,6 +52,7 @@ $(document).ready(function() {
   // Show Players button click
   $('#showPlayers1').on('click', function() {
     populatePlayerTable(currentTeamId);
+
   });
 
   $('#showPlayers2').on('click', function() {
