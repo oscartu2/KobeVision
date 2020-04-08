@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
 
-const port = process.env.PORT || 3000;
+const port = 3000;
 // Database
 var mongo = require('mongodb');
 var monk = require('monk');
