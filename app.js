@@ -3,15 +3,18 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+require('dotenv').config();
 
 // Database
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('localhost:27017/KobeVision');
+var db = monk('mongodb://heroku_z845v6qz:ancvrkna3eucjpq9rivufajnos@ds033113.mlab.com:33113/heroku_z845v6qz');
+// var db = monk('process.env.MONGODB_URI');
 
 var indexRouter = require('./routes/index');
 var endpointRouter = require('./routes/endpoints');
 var dbEndpointRouter = require('./routes/dbEndpoints');
+const port = 3000;
 
 var app = express();
 
@@ -51,6 +54,8 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	res.render('error');
 });
+
+app.listen(port);
 
 module.exports = app;
 
