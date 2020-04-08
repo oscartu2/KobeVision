@@ -4,6 +4,7 @@ var gameListData = [];
 var currentlySelected = "1";
 var currentTeamId = "";
 var currentTeamName = "";
+var currentSeason = "";
 const MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
 
 
@@ -20,8 +21,6 @@ $(document).ready(function() {
     $('.card2:hover').css({"box-shadow": "0 8px 16px 0 rgba(0,0,0,0.5)"});
   });
 
-  $('#teamCard1').on('click', )
-
   $('#teamCard2').on('click', function() {
     currentlySelected = "2";
     $('.card2').css({"border":"5px solid #CCC"});
@@ -33,6 +32,10 @@ $(document).ready(function() {
     var methodElement = document.getElementById('methods');
     var method = methodElement.options[methodElement.selectedIndex].text;
     $('#predictionMethod').text(this.value);
+  });
+
+  $(document).on('change', 'cardYear', function () {
+    currentSeason = this;
   });
 
   $('#teamList table tbody').on('click', 'td a.linkshowteam', fillCard);
@@ -142,15 +145,14 @@ function fillCard(event) {
   $(teamName).text(thisTeamObject.fullName);
   $(teamPlayers).css({'position': 'absolute', 'display': 'inline', 'left': '7em', 'top':'42em'});
   $('.container' + currentlySelected).css({"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"});
-  $(teamInfo).text("TEAM EFFICIENCY RATING: 50\n WIN AVG \n LOSE AVG");
-  
+
   var yearElement = document.getElementById(teamYear);
-  
+  var seasons = [];
+
   // Get seasons;
-  $.getJSON( '/db/seasons/' + currentTeamId, function ( data ) {
-    console.log(data);
+  $.getJSON('/db/seasons/' + currentTeamId, function (data) {
+    $('#'+teamYear).empty();
     // Get all the seasons
-    var seasons = [];
     for (var row of data) {
       seasons.push(row.Season);
     }
@@ -159,7 +161,12 @@ function fillCard(event) {
     seasons.sort(function(a, b) {
       return Number(b.substring(0,4)) - Number(a.substring(0,4));
     });
-    console.log(seasons);
+
+
+  $.getJSON('/db/seasons/' + currentTeamId + '/' + seasons[0], function (data) {
+    $(teamInfo).text("Win Loss Ratio: " + Object.valueOf(data["W"]));
+  });
+
     // Add each season to year selector
     $.each(seasons, function() {
       var newOption = document.createElement("option");
@@ -167,6 +174,7 @@ function fillCard(event) {
       yearElement.add(newOption);
     });
   });
+
 };
 
 
