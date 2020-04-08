@@ -9,9 +9,10 @@ var mongo = require('mongodb');
 var monk = require('monk');
 
 // Connecting to db thru heroku
-// var db = monk('mongodb://admin:admin123@ds033113.mlab.com:33113/heroku_z845v6qz');
+var db = monk('mongodb://admin:admin123@ds033113.mlab.com:33113/heroku_z845v6qz');
 
-var db = monk('localhost:27017/KobeVision');
+// Connecting to db locally
+// var db = monk('localhost:27017/KobeVision');
 
 var indexRouter = require('./routes/index');
 var endpointRouter = require('./routes/endpoints');
