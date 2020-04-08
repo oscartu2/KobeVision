@@ -5,16 +5,19 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
 
+const port = process.env.PORT || 3000;
 // Database
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('mongodb://heroku_z845v6qz:ancvrkna3eucjpq9rivufajnos@ds033113.mlab.com:33113/heroku_z845v6qz');
-// var db = monk('process.env.MONGODB_URI');
+
+// Connecting to db on either 
+// var db = monk('mongodb://heroku_z845v6qz:ancvrkna3eucjpq9rivufajnos@ds033113.mlab.com:33113/heroku_z845v6qz');
+
+var db = monk(process.env.URI || 'localhost:27017/KobeVision');
 
 var indexRouter = require('./routes/index');
 var endpointRouter = require('./routes/endpoints');
 var dbEndpointRouter = require('./routes/dbEndpoints');
-const port = 3000;
 
 var app = express();
 
