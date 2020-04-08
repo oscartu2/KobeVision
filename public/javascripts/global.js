@@ -5,7 +5,11 @@ var currentlySelected = "1";
 var currentTeamId = "";
 var currentTeamName = "";
 var currentSeason = "";
+var stats1 = {};
+var stats2 = {};
 const MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
+
+var probability = [];
 
 
 // DOM Ready =============================================================
@@ -52,12 +56,41 @@ $(document).ready(function() {
   // Show Players button click
   $('#showPlayers1').on('click', function() {
     populatePlayerTable(currentTeamId);
-
   });
 
   $('#showPlayers2').on('click', function() {
     populatePlayerTable(currentTeamId);
   });
+
+  $('#predictButton').on('click', function() {
+    var card1 = document.getElementById('card1Year').innerHTML;
+    var card2 = document.getElementById('card2Year').innerHTML;
+    if (card1 === null || card2 === null || card1 === "" || card2 === "") {
+      $('#predictionMethod').text("Please choose 2 teams");
+    } else {
+      var methodElement = document.getElementById('methods');
+      var method = methodElement.options[methodElement.selectedIndex].text;
+      if (methodElement.selectedIndex === 1) {
+        probability = [];
+        var total = Number((stats1["WLR"]*1000).toFixed(0)) + Number((stats2["WLR"]*1000).toFixed(0));
+        console.log((stats2["WLR"]*1000).toFixed(0));
+        console.log((stats1["WLR"]*1000).toFixed(0));
+        console.log(total);
+        for (var i = 0; i < Number((stats1["WLR"]*1000).toFixed(0)); i++) {
+          probability.push(stats1["NAME"]);
+        }
+        for (var i = probability.length - 1; i < total; i++) {
+          probability.push(stats2["NAME"]);
+        }
+        console.log("WLR");
+        console.log(stats1);
+        console.log(stats2);
+        console.log(getRandomInt(probability.length));
+        $('#predictionMethod').empty();
+        $('#predictionMethod').text(probability[getRandomInt(probability.length)]);
+      }
+    }
+  })
 
 });
 
@@ -190,7 +223,14 @@ function getStatistics(teamElement, id, season) {
     var srs = "<p>Simple Rating: " + res["SRS"] + "</p>";
     var ortg = "<p>Offensive Rating: " + res["ORtg"] + " (" + res["Rel ORtg"] + ")" + "</p>";
     var drtg = "<p>Defensive Rating: " + res["DRtg"] + " (" + res["Rel DRtg"] + ")" + "</p>";
+    if (currentlySelected === "1") {
+      stats1 = {"NAME": res["Team"].replace("*",""), "WLR": Number(res["W/L%"]), "SRS": Number(res["SRS"]), "ORtg": Number(res["ORtg"]), "DRtg": Number(res["DRtg"])}
+    }
+    if (currentlySelected === "2") {
+      stats2 = {"NAME": res["Team"].replace("*",""), "WLR": Number(res["W/L%"]), "SRS": Number(res["SRS"]), "ORtg": Number(res["ORtg"]), "DRtg": Number(res["DRtg"])}
+    }
     $(teamElement).append(wlr, srs, ortg, drtg);
+    probability = [];
   });
 }
 
@@ -200,4 +240,7 @@ function calculateAge(dob) {
     return parseInt(years_elapsed);
 }
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 

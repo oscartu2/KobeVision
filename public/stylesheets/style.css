@@ -198,7 +198,7 @@ img {
 		background:rgba(80,120,255,0.05);
 	}
 
-/* Dropdown Content (Hidden by Default) */
+/* Prediction Dropdown */
 .dropdown-content {
   display: inline-block;
   position: relative;
@@ -208,6 +208,12 @@ img {
   z-index: 1;
 }
 
+.dropdown button {
+	
+}
+
+
+/* Card years selector */
 .card1Years {
 	display: inline-block;
 	/*display: none;*/
@@ -230,4 +236,38 @@ img {
   	min-width: 80px;
 	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
 	z-index: 1;
+}
+
+/* Predict loading */
+.lds-circle {
+  display: inline-block;
+  position: relative;
+  transform: translateZ(1px);
+}
+
+.lds-circle > div {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  background: #ccc;
+  animation: lds-circle 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+@keyframes lds-circle {
+  0%, 100% {
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
+  }
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(1800deg);
+    animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
+  }
+  100% {
+    transform: rotateY(3600deg);
+  }
 }
