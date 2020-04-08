@@ -34,17 +34,18 @@ $(document).ready(function() {
     $('#predictionMethod').text(this.value);
   });
 
-  $(document).on('change', 'cardYear', function () {
-    currentSeason = this;
+  $(document).on('change', '.cardYears', function () {
+    var yearElement = document.getElementById('card' + currentTeamId + 'Year');
+    var year = yearElement.options[yearElement.selectedIndex].text;
+    getStatistics('#card' + currentTeamId + 'Info', currentTeamId, year);
   });
 
   $('#teamList table tbody').on('click', 'td a.linkshowteam', fillCard);
 
 
-  // Predict button click
+  // Show Players button click
   $('#showPlayers1').on('click', function() {
     populatePlayerTable(currentTeamId);
-
   });
 
   $('#showPlayers2').on('click', function() {
@@ -143,7 +144,7 @@ function fillCard(event) {
   $(teamLogo).css({"max-width":"200px", "max-height":"200px"});
   $(teamLogo).attr('src', thisTeamObject.logo);
   $(teamName).text(thisTeamObject.fullName);
-  $(teamPlayers).css({'position': 'absolute', 'display': 'inline', 'left': '7em', 'top':'42em'});
+  $(teamPlayers).css({'position': 'absolute', 'display': 'inline', 'left': '7em', 'top':'50em'});
   $('.container' + currentlySelected).css({"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"});
 
   var yearElement = document.getElementById(teamYear);
@@ -162,12 +163,8 @@ function fillCard(event) {
       return Number(b.substring(0,4)) - Number(a.substring(0,4));
     });
 
+    getStatistics(teamInfo, currentTeamId, seasons[0]);
 
-  $.getJSON('/db/seasons/' + currentTeamId + '/' + seasons[0], function (data) {
-    $(teamInfo).text("Win Loss Ratio: " + Object.valueOf(data["W"]));
-  });
-
-    // Add each season to year selector
     $.each(seasons, function() {
       var newOption = document.createElement("option");
       newOption.text = this;
@@ -177,6 +174,18 @@ function fillCard(event) {
 
 };
 
+function getStatistics(teamElement, id, season) {
+  $.getJSON('/db/seasons/' + id + '/' + season, function (val) {
+    // For some reason getJSON returns an array of one Object
+    res = val[0];
+    $(teamElement).empty();
+    var wlr = "<p>Win Loss Ratio: " + res["W/L%"] + "</p>";
+    var srs = "<p>Simple Rating: " + res["SRS"] + "</p>";
+    var ortg = "<p>Offensive Rating: " + res["ORtg"] + " (" + res["Rel ORtg"] + ")" + "</p>";
+    var drtg = "<p>Defensive Rating: " + res["DRtg"] + " (" + res["Rel DRtg"] + ")" + "</p>";
+    $(teamElement).append(wlr, srs, ortg, drtg);
+  });
+}
 
 function calculateAge(dob) { 
     var date_array = dob.split('-')

@@ -17,7 +17,7 @@ a {
 
 #teamCard1 {
 	width:250px;
-	height: 500px;
+	height: 600px;
 	display:inline-block;
 	position: absolute;
 	left: 5em;
@@ -42,7 +42,7 @@ a {
 
 #teamCard2 {
 	width:250px;
-	height: 500px;
+	height: 600px;
 	display:inline-block;
 	position: relative;
 	left: 5em;
@@ -67,7 +67,7 @@ a {
 #teamList {
 	/*display: inline-block;*/
 	position: absolute;
-	top: 50em;
+	top: 60em;
 	left: 5em;
 }
 	#teamList h2 {
@@ -101,7 +101,7 @@ a {
 #playerList {
 	/*display: inline-block;*/
 	position: absolute;
-	top: 50em;
+	top: 60em;
 	left: 40em;
 }
 	#playerList h2 {
@@ -171,6 +171,7 @@ img {
 	background:rgba(0,0,0,0);
 	position: absolute;
 	top: 300px;
+	min-width: 220px;
 }
 
 .container2 {
@@ -179,6 +180,7 @@ img {
 	background:rgba(0,0,0,0);
 	position: absolute;
 	top: 300px;
+	min-width: 220px;
 }
 
 /* DROPDOWN */
