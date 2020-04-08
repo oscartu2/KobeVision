@@ -1,12 +1,11 @@
 // TeamList data array for filling in info box
-var teamListData = [];
-var gameListData = [];
 var currentlySelected = "1";
 var currentTeamId = "";
 var currentTeamName = "";
 var currentSeason = "";
 var stats1 = {};
 var stats2 = {};
+var teamToId = {};
 const MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
 
 var probability = [];
@@ -41,13 +40,15 @@ $(document).ready(function() {
   $(document).on('change', '.card1Years', function () {
     var yearElement = document.getElementById('card1Year');
     var year = yearElement.options[yearElement.selectedIndex].text;
-    getStatistics('#card' + currentlySelected + 'Info', currentTeamId, year);
+    var id = teamToId[document.getElementById('card1TeamName').textContent];
+    getStatistics('1', '#card1Info', id, year);
   });
 
   $(document).on('change', '.card2Years', function () {
     var yearElement = document.getElementById('card2Year');
     var year = yearElement.options[yearElement.selectedIndex].text;
-    getStatistics('#card' + currentlySelected + 'Info', currentTeamId, year);
+    var id = teamToId[document.getElementById('card2TeamName').textContent];
+    getStatistics('2', '#card2Info', id, year);
   });
 
   $('#teamList table tbody').on('click', 'td a.linkshowteam', fillCard);
@@ -55,11 +56,15 @@ $(document).ready(function() {
 
   // Show Players button click
   $('#showPlayers1').on('click', function() {
-    populatePlayerTable(currentTeamId);
+    var teamName = document.getElementById('card1TeamName').textContent;
+    var teamId = teamToId[teamName];
+    populatePlayerTable(teamId, teamName);
   });
 
   $('#showPlayers2').on('click', function() {
-    populatePlayerTable(currentTeamId);
+    var teamName = document.getElementById('card2TeamName').textContent;
+    var teamId = teamToId[teamName];
+    populatePlayerTable(teamId, teamName);
   });
 
   $('#predictButton').on('click', function() {
@@ -73,21 +78,18 @@ $(document).ready(function() {
       if (methodElement.selectedIndex === 1) {
         probability = [];
         var total = Number((stats1["WLR"]*1000).toFixed(0)) + Number((stats2["WLR"]*1000).toFixed(0));
-        console.log((stats2["WLR"]*1000).toFixed(0));
-        console.log((stats1["WLR"]*1000).toFixed(0));
-        console.log(total);
         for (var i = 0; i < Number((stats1["WLR"]*1000).toFixed(0)); i++) {
           probability.push(stats1["NAME"]);
         }
         for (var i = probability.length - 1; i < total; i++) {
           probability.push(stats2["NAME"]);
         }
-        console.log("WLR");
         console.log(stats1);
         console.log(stats2);
-        console.log(getRandomInt(probability.length));
         $('#predictionMethod').empty();
         $('#predictionMethod').text(probability[getRandomInt(probability.length)]);
+      } else if (methodElement.selectedIndex === 2) {
+
       }
     }
   })
@@ -108,6 +110,7 @@ function populateTeamTable() {
     // For each item in our JSON, add a table row and cells to the content string
     $.each(data, function() {
       if (this.nbaFranchise === "1" && this.teamId !== "37") {
+        teamToId[this.fullName] = this.teamId;
         tableContent += '<tr>';
         tableContent += '<td><a href="#" class="linkdeleteuser" rel="' + this.teamId + '">' + this.teamId + '</a></td>';
         tableContent += '<td><a href="#" class="linkshowteam" rel="' + this.fullName + '">' + this.fullName + '</a></td>';
@@ -125,9 +128,9 @@ function populateTeamTable() {
 };
 
 // Fill Team table with data
-function populatePlayerTable(teamId) {
+function populatePlayerTable(teamId, teamName) {
 
-  $('#playerList h2').html("Players List: " + currentTeamName);
+  $('#playerList h2').html("Players List: " + teamName);
 
   // Empty content string
   var tableContent = '';
@@ -203,7 +206,7 @@ function fillCard(event) {
       return Number(b.substring(0,4)) - Number(a.substring(0,4));
     });
 
-    getStatistics(teamInfo, currentTeamId, seasons[0]);
+    getStatistics(currentlySelected, teamInfo, currentTeamId, seasons[0]);
 
     $.each(seasons, function() {
       var newOption = document.createElement("option");
@@ -214,7 +217,7 @@ function fillCard(event) {
 
 };
 
-function getStatistics(teamElement, id, season) {
+function getStatistics(cardNumber, teamElement, id, season) {
   $.getJSON('/db/seasons/' + id + '/' + season, function (val) {
     // For some reason getJSON returns an array of one Object
     res = val[0];
@@ -223,10 +226,10 @@ function getStatistics(teamElement, id, season) {
     var srs = "<p>Simple Rating: " + res["SRS"] + "</p>";
     var ortg = "<p>Offensive Rating: " + res["ORtg"] + " (" + res["Rel ORtg"] + ")" + "</p>";
     var drtg = "<p>Defensive Rating: " + res["DRtg"] + " (" + res["Rel DRtg"] + ")" + "</p>";
-    if (currentlySelected === "1") {
+    if (cardNumber === "1") {
       stats1 = {"NAME": res["Team"].replace("*",""), "WLR": Number(res["W/L%"]), "SRS": Number(res["SRS"]), "ORtg": Number(res["ORtg"]), "DRtg": Number(res["DRtg"])}
     }
-    if (currentlySelected === "2") {
+    if (cardNumber === "2") {
       stats2 = {"NAME": res["Team"].replace("*",""), "WLR": Number(res["W/L%"]), "SRS": Number(res["SRS"]), "ORtg": Number(res["ORtg"]), "DRtg": Number(res["DRtg"])}
     }
     $(teamElement).append(wlr, srs, ortg, drtg);

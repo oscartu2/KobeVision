@@ -186,8 +186,8 @@ img {
 /* DROPDOWN */
 /* The container <div> - needed to position the dropdown content */
 .dropdown {
-  	width:250px;
-	height: 250px;
+  	width:300px;
+	height: 300px;
 	display:inline-flex;
 	position: absolute;
 	left: 55em;
@@ -242,15 +242,17 @@ img {
 .lds-circle {
   display: inline-block;
   position: relative;
+  left: -4.5em;
+  top: 3em;
   transform: translateZ(1px);
 }
 
 .lds-circle > div {
   display: inline-block;
   position: relative;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
+  width: 49px;
+  height: 49px;
+  margin: 7px;
   border-radius: 50%;
   background: #ccc;
   animation: lds-circle 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
