@@ -58,13 +58,17 @@ $(document).ready(function() {
   $('#showPlayers1').on('click', function() {
     var teamName = document.getElementById('card1TeamName').textContent;
     var teamId = teamToId[teamName];
-    populatePlayerTable(teamId, teamName);
+    var yearElement = document.getElementById('card1Year');
+    var year = yearElement.options[yearElement.selectedIndex].text;
+    populatePlayerTable(teamId, teamName, year);
   });
 
   $('#showPlayers2').on('click', function() {
     var teamName = document.getElementById('card2TeamName').textContent;
     var teamId = teamToId[teamName];
-    populatePlayerTable(teamId, teamName);
+    var yearElement = document.getElementById('card2Year');
+    var year = yearElement.options[yearElement.selectedIndex].text;
+    populatePlayerTable(teamId, teamName, year);
   });
 
   $('#predictButton').on('click', function() {
@@ -128,33 +132,35 @@ function populateTeamTable() {
 };
 
 // Fill Team table with data
-function populatePlayerTable(teamId, teamName) {
+function populatePlayerTable(teamId, teamName, season) {
 
   $('#playerList h2').html("Players List: " + teamName);
 
   // Empty content string
   var tableContent = '';
   // jQuery AJAX call for JSON
-  $.getJSON( '/teams/allPlayers/' + teamId, function ( data ) {
+  $.getJSON( '/db/roster/' + teamId + "/" + season, function ( data ) {
     // teamListData = data;
     // For each item in our JSON, add a table row and cells to the content string
     $.each(data, function() {
-      if (this.leagues && this.leagues.standard && this.leagues.standard.active === "1") {
-        tableContent += '<tr>';
-        tableContent += '<td>' + this.playerId + '</td>';
-        tableContent += '<td>' + this.firstName + '</td>';
-        tableContent += '<td>' + this.lastName + '</td>';
-        tableContent += '<td>' + this.leagues.standard.jersey + '</td>';
-        tableContent += '<td>' + this.leagues.standard.pos + '</td>';
-        tableContent += '<td>' + new Date(this.dateOfBirth).toString().substring(4,15) + ' (' + calculateAge(this.dateOfBirth) + ')</td>';
-        tableContent += '<td>' + this.heightInMeters + '</td>';
-        tableContent += '<td>' + this.weightInKilograms + '</td>';
-        tableContent += '<td>' + this.startNba + '</td>';
-        tableContent += '<td>' + this.collegeName + '</td>';
-        tableContent += '<td>' + this.affiliation + '</td>';
-        tableContent += '</tr>';
-      }
-    });
+      console.log(this);
+    //   if (this.leagues && this.leagues.standard && this.leagues.standard.active === "1") {
+    //     tableContent += '<tr>';
+    //     tableContent += '<td>' + this.playerId + '</td>';
+    //     tableContent += '<td>' + this.firstName + '</td>';
+    //     tableContent += '<td>' + this.lastName + '</td>';
+    //     tableContent += '<td>' + this.leagues.standard.jersey + '</td>';
+    //     tableContent += '<td>' + this.leagues.standard.pos + '</td>';
+    //     tableContent += '<td>' + new Date(this.dateOfBirth).toString().substring(4,15) + ' (' + calculateAge(this.dateOfBirth) + ')</td>';
+    //     tableContent += '<td>' + this.heightInMeters + '</td>';
+    //     tableContent += '<td>' + this.weightInKilograms + '</td>';
+    //     tableContent += '<td>' + this.startNba + '</td>';
+    //     tableContent += '<td>' + this.collegeName + '</td>';
+    //     tableContent += '<td>' + this.affiliation + '</td>';
+    //     tableContent += '</tr>';
+    //   }
+    // });
+  });
 
     // Inject the whole content string into our existing HTML table
     $('#playerList table tbody').html(tableContent);
@@ -218,7 +224,7 @@ function fillCard(event) {
 };
 
 function getStatistics(cardNumber, teamElement, id, season) {
-  $.getJSON('/db/seasons/' + id + '/' + season, function (val) {
+  $.getJSON('/db/statistics/' + id + '/' + season, function (val) {
     // For some reason getJSON returns an array of one Object
     res = val[0];
     $(teamElement).empty();
