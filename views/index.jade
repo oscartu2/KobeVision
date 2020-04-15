@@ -16,6 +16,7 @@ block content
         h4(id='card1TeamName')
         p(id='card1Info')
       button(id='showPlayers1') Show Players
+      button(id='showAdvancedStats1') Show Advanced Stats
 
     div.card2(id='teamCard2')
       h2 Team 2
@@ -25,6 +26,7 @@ block content
         h4(id='card2TeamName')
         p(id='card2Info')
       button(id='showPlayers2') Show Players
+      button(id='showAdvancedStats2') Show Advanced Stats
     // /TEAM INFO CARD     
   
     // PREDICTION METHOD
@@ -33,7 +35,8 @@ block content
         select.dropdown-content(id='methods')
           option(selected='true') Please Select
           option(id='ratio') Win/Loss Ratio
-          option(id='starting') Starting 5 PER
+          option(id='top5per') Starting 5 PER
+          option(id='top12per') Top 12 PER
           option(id='team') Team Stats
           option(id='model') Fancy ML?
         p(id='predictionMethod') Please Select
@@ -53,24 +56,13 @@ block content
         tbody
     // /TEAMS LIST
 
-    // PLAYERS LIST
-    #playerList
-      h2 (Latest) Players List
-      table
+    // INFO LIST
+    #infoList
+      h2 Information Table
+      table(id='infoTable')
         thead
-          th Player ID
-          th First Name
-          th Last Name
-          th Number
-          th Position
-          th Date of Birth (Age)
-          th Height (m)
-          th Weight (kg)
-          th NBA Start
-          th College Name
-          th Affiliation
         tbody
-    // /PLAYERS LIST
+    // /INFO LIST
 
 
 

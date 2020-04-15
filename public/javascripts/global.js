@@ -60,7 +60,7 @@ $(document).ready(function() {
     var teamId = teamToId[teamName];
     var yearElement = document.getElementById('card1Year');
     var year = yearElement.options[yearElement.selectedIndex].text;
-    populatePlayerTable(teamId, teamName, year);
+    populateInfoTable('ROSTER',teamId, teamName, year);
   });
 
   $('#showPlayers2').on('click', function() {
@@ -68,8 +68,26 @@ $(document).ready(function() {
     var teamId = teamToId[teamName];
     var yearElement = document.getElementById('card2Year');
     var year = yearElement.options[yearElement.selectedIndex].text;
-    populatePlayerTable(teamId, teamName, year);
+    populateInfoTable('ROSTER',teamId, teamName, year);
   });
+
+  // Show Advanced stats button click
+  $('#showAdvancedStats1').on('click', function() {
+    var teamName = document.getElementById('card1TeamName').textContent;
+    var teamId = teamToId[teamName];
+    var yearElement = document.getElementById('card1Year');
+    var year = yearElement.options[yearElement.selectedIndex].text;
+    populateInfoTable('ADVANCED',teamId, teamName, year);
+  });
+  
+  $('#showAdvancedStats2').on('click', function() {
+    var teamName = document.getElementById('card2TeamName').textContent;
+    var teamId = teamToId[teamName];
+    var yearElement = document.getElementById('card2Year');
+    var year = yearElement.options[yearElement.selectedIndex].text;
+    populateInfoTable('ADVANCED',teamId, teamName, year);
+  });
+
 
   $('#predictButton').on('click', function() {
     var card1 = document.getElementById('card1Year').innerHTML;
@@ -79,6 +97,7 @@ $(document).ready(function() {
     } else {
       var methodElement = document.getElementById('methods');
       var method = methodElement.options[methodElement.selectedIndex].text;
+      let winner = "";
       if (methodElement.selectedIndex === 1) {
         probability = [];
         var total = Number((stats1["WLR"]*1000).toFixed(0)) + Number((stats2["WLR"]*1000).toFixed(0));
@@ -91,10 +110,27 @@ $(document).ready(function() {
         console.log(stats1);
         console.log(stats2);
         $('#predictionMethod').empty();
-        $('#predictionMethod').text(probability[getRandomInt(probability.length)]);
+        winner = probability[getRandomInt(probability.length)];
       } else if (methodElement.selectedIndex === 2) {
-
+        $('#predictionMethod').empty();
+        if (stats1["top5per"] > stats2["top5per"]) {
+          winner = stats1["NAME"];
+        } else if (stats2["top5per"] > stats1["top5per"]) {
+          winner = stats2["NAME"]
+        } else {
+          winner = "Tie! Lol";
+        }
+      } else if (methodElement.selectedIndex === 3) {
+        $('#predictionMethod').empty();
+        if (stats1["top12per"] > stats2["top12per"]) {
+          winner = stats1["NAME"];
+        } else if (stats2["top12per"] > stats1["top12per"]) {
+          winner = stats2["NAME"]
+        } else {
+          winner = "Tie! Lol";
+        }
       }
+      $('#predictionMethod').text(winner);
     }
   })
 
@@ -132,39 +168,102 @@ function populateTeamTable() {
 };
 
 // Fill Team table with data
-function populatePlayerTable(teamId, teamName, season) {
-
-  $('#playerList h2').html("Players List: " + teamName);
-
+function populateInfoTable(option, teamId, teamName, season) {
+  let endpointBase = "";
+  let title = "";
+  let tableHeaders = "";
+  if (option === "ROSTER") {
+    endpointBase = "/db/roster/";
+    title = season + " " + teamName + " Roster";
+    tableHeaders = "<tr>";
+    tableHeaders += "<th>Number</th>";
+    tableHeaders += "<th>Name</th>";
+    tableHeaders += "<th>Position</th>";
+    tableHeaders += "<th>Date of Birth (Age)</th>";
+    tableHeaders += "<th>Height (ft)</th>";
+    tableHeaders += "<th>Weight (lbs)</th>";
+    tableHeaders += "<th>Experience</th>";
+    tableHeaders += "<th>College</th>";
+    tableHeaders += "<th>Nationality</th>";
+    tableHeaders += "</tr>";
+  } else if (option === "ADVANCED") {
+    endpointBase = "/db/roster/statistics/advanced/";
+    title = season + " " + teamName + " Advanced Stats";
+    /*Maybe update to 
+    ['Rk', 'Name', 'Age', 'G', 'MP', 'PER', 'TS%', '3PAr', 'FTr', 'ORB%',
+     'DRB%', 'TRB%', 'AST%', 'STL%', 'BLK%', 'TOV%', 'USG%', 'Unnamed: 17', 
+     'OWS', 'DWS', 'WS', 'WS/48','Unnamed: 22', 'OBPM', 'DBPM', 'BPM', 'VORP']*/
+    tableHeaders = "<tr>";
+    tableHeaders += "<th>Rank</th>";
+    tableHeaders += "<th>Name</th>";
+    tableHeaders += "<th>Player Efficiency Rating (PER)</th>";
+    tableHeaders += "<th>True Shooting Pct.</th>";
+    tableHeaders += "<th>Total Rebound Pct.</th>";
+    tableHeaders += "<th>Usage Pct.</th>";
+    tableHeaders += "<th>Box Plus/Minus</th>";
+    tableHeaders += "<th>Win Shares</th>";
+    tableHeaders += "<th>Minutes Played</th>";
+    tableHeaders += "</tr>";
+  }
+  $('#infoList h2').html(title);
+  $('#infoList table thead').html(tableHeaders);
   // Empty content string
-  var tableContent = '';
+  let tableContent = "";
   // jQuery AJAX call for JSON
-  $.getJSON( '/db/roster/' + teamId + "/" + season, function ( data ) {
-    // teamListData = data;
-    // For each item in our JSON, add a table row and cells to the content string
+  $.getJSON(endpointBase + teamId + "/" + season, function (data) {
+    if (option === "ADVANCED") {
+      let players = [];
+      for (var row of data) {
+        players.push(row);
+      }
+      // Sort it by most recent season
+      players.sort(function(a, b) {
+        return Number(a["RANK"]) - Number(b["RANK"]);
+      });
+      data = players;
+    }
     $.each(data, function() {
-      console.log(this);
-    //   if (this.leagues && this.leagues.standard && this.leagues.standard.active === "1") {
-    //     tableContent += '<tr>';
-    //     tableContent += '<td>' + this.playerId + '</td>';
-    //     tableContent += '<td>' + this.firstName + '</td>';
-    //     tableContent += '<td>' + this.lastName + '</td>';
-    //     tableContent += '<td>' + this.leagues.standard.jersey + '</td>';
-    //     tableContent += '<td>' + this.leagues.standard.pos + '</td>';
-    //     tableContent += '<td>' + new Date(this.dateOfBirth).toString().substring(4,15) + ' (' + calculateAge(this.dateOfBirth) + ')</td>';
-    //     tableContent += '<td>' + this.heightInMeters + '</td>';
-    //     tableContent += '<td>' + this.weightInKilograms + '</td>';
-    //     tableContent += '<td>' + this.startNba + '</td>';
-    //     tableContent += '<td>' + this.collegeName + '</td>';
-    //     tableContent += '<td>' + this.affiliation + '</td>';
-    //     tableContent += '</tr>';
-    //   }
-    // });
+      if (option === "ROSTER") {
+        tableContent += '<tr>';
+        if (!this.NUMBER) {
+          tableContent += '<td>' + 'N/A' + '</td>';
+        } else {
+          tableContent += '<td>' + this.NUMBER + '</td>';
+        }
+        tableContent += '<td>' + this.PLAYER + '</td>';
+        tableContent += '<td>' + this.POS + '</td>';
+        tableContent += '<td>' + new Date(this.BIRTH_DATE).toString().substring(4,15) + ' (' + calculateAge(this.BIRTH_DATE) + ')</td>';
+        tableContent += '<td>' + this.HEIGHT + '</td>';
+        tableContent += '<td>' + this.WEIGHT + '</td>';
+        if (this.EXPERIENCE === "R") {
+          tableContent += '<td>' + 'Rookie' + '</td>';
+        } else {
+          tableContent += '<td>' + this.EXPERIENCE + '</td>';
+        }
+        tableContent += '<td>' + this.COLLEGE + '</td>';
+        tableContent += '<td>' + this.NATIONALITY + '</td>';
+        tableContent += '</tr>';
+      } else if (option === "ADVANCED") {
+        tableContent += "<tr>";
+        tableContent += "<td>" + Number(this.RANK) + "</td>";
+        tableContent += "<td>" + this.NAME + "</td>";
+        tableContent += "<td>" + Number(this.PER) + "</td>";
+        tableContent += "<td>" + (Number(this.TRUE_SHOOTING_PCT)*100).toFixed(1) + "%</td>";
+        tableContent += "<td>" + this["TOTAL_RB%"] + "%</td>";
+        tableContent += "<td>" + this["USG%"]+ "%</td>";
+        tableContent += "<td>" + Number(this.BPM) + "</td>";
+        tableContent += "<td>" + Number(this.WS) + "</td>";
+        tableContent += "<td>" + Number(this.MINUTES_PLAYED) + "</td>";
+        tableContent += "</tr>";
+      }
   });
-
     // Inject the whole content string into our existing HTML table
-    $('#playerList table tbody').html(tableContent);
+    $('#infoList table tbody').html(tableContent);
   });
+  
+  // Sorttable sorting on string not number
+  let tableObject = document.getElementById("infoTable");
+  sorttable.makeSortable(tableObject);
 };
 
 function fillCard(event) {
@@ -188,12 +287,14 @@ function fillCard(event) {
   var teamLogo = '#teamLogo' + currentlySelected;
   var teamName = '#card' + currentlySelected + 'TeamName';
   var teamPlayers = '#showPlayers' + currentlySelected;
+  var teamAdvanced = '#showAdvancedStats' + currentlySelected;
   var teamInfo = '#card' + currentlySelected + 'Info';
   var teamYear = 'card' + currentlySelected + 'Year';
   $(teamLogo).css({"max-width":"200px", "max-height":"200px"});
   $(teamLogo).attr('src', thisTeamObject.logo);
   $(teamName).text(thisTeamObject.fullName);
-  $(teamPlayers).css({'position': 'absolute', 'display': 'inline', 'left': '7em', 'top':'50em'});
+  $(teamPlayers).css({'position': 'absolute', 'display': 'inline', 'left': '1.25em', 'top':'28.2em'});
+  $(teamAdvanced).css({'position': 'absolute', 'display': 'inline', 'left': '9.8em', 'top':'28.2em'});
   $('.container' + currentlySelected).css({"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"});
 
   var yearElement = document.getElementById(teamYear);
@@ -240,6 +341,50 @@ function getStatistics(cardNumber, teamElement, id, season) {
     }
     $(teamElement).append(wlr, srs, ortg, drtg);
     probability = [];
+  });
+
+  $.getJSON("/db/roster/statistics/advanced/" + id + "/" + season, function(val) {
+
+    let top5per = 0;
+    let top12per = 0;
+    let sortByStarting = [];
+    let sortByMinutes = [];
+    for (var row of val) {
+      sortByMinutes.push(row);
+      sortByStarting.push(row);
+
+    }
+
+    // For starting 5 PER
+    sortByStarting.sort(function(a, b) {
+      return Number(a["PER"]) - Number(b["PER"]);
+    });
+
+    // For Stanley Yang's paper of Top 12
+    sortByMinutes.sort(function(a, b) {
+      return Number(a["MINUTES_PLAYED"]) - Number(b["MINUTES_PLAYED"]);
+    });
+
+    for (let i = 0; i < 12; i++) {
+      if (i < 5) {
+        top5per += Number(sortByStarting[i]["PER"]) * Number(sortByStarting[i]["MINUTES_PLAYED"])
+      }
+      top12per += Number(sortByMinutes[i]["PER"]) * Number(sortByMinutes[i]["MINUTES_PLAYED"])
+    }
+
+    let per5 = "<p>Starting 5 PER: " + top5per.toFixed(2) + "</p>";
+    let per12 = "<p>Top 12 Adjusted PER: " + top12per.toFixed(2) + "</p>";
+    
+
+    if (cardNumber === "1") {
+      stats1["top5per"] = top5per;
+      stats1["top12per"] = top12per;
+    }
+    if (cardNumber === "2") {
+      stats2["top5per"] = top5per;
+      stats2["top12per"] = top12per;
+    }
+    $(teamElement).append(per5, per12);
   });
 }
 

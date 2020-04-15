@@ -35,6 +35,8 @@ Check it out at: https://kobe-vision.herokuapp.com
 - Adding something into MongoDB instance
 In file_name.csv's directory, open shell and execute:
 `mongoimport -d database_name -c collection_name --type CSV --file file_name.csv --headerline`
+Or if adding to mLab
+`mongoimport -h ds033113.mlab.com:33113 -d heroku_z845v6qz -u <user_name> -p <user_password> -c collection_name --type CSV --file file_name.csv --headerline`
 where database_name, collection_name, and file_name are all specified
 
 - Adding a field (column) that satisfies another query

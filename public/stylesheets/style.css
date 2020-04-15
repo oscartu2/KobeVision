@@ -12,7 +12,7 @@ a {
 }
 
 #wrapper {
-	padding-left:312px;
+	padding-left:5em;
 }
 
 #teamCard1 {
@@ -45,7 +45,7 @@ a {
 	height: 600px;
 	display:inline-block;
 	position: relative;
-	left: 5em;
+	left: 22.5em;
 }
 	#teamCard2 h2 {
 		padding:15px;
@@ -67,7 +67,7 @@ a {
 #teamList {
 	/*display: inline-block;*/
 	position: absolute;
-	top: 60em;
+	top: 57.5em;
 	left: 5em;
 }
 	#teamList h2 {
@@ -98,35 +98,36 @@ a {
 				text-align:center;
 			}
 
-#playerList {
+#infoList {
 	/*display: inline-block;*/
 	position: absolute;
-	top: 60em;
+	top: 57.5em;
 	left: 40em;
+	padding-right: 5em;
 }
-	#playerList h2 {
+	#infoList h2 {
 		padding:15px;
 		border:1px solid #CCC;
 		background:rgba(80,120,255,0.05);
 	}
 
-	#playerList table {
+	#infoList table {
 		border-collapse:separate;
 		border-spacing:2px;
 		background:#CCC;
 	}
-		#playerList table th {
+		#infoList table th {
 			background:#EEE;
 			font-weight:600;
 			padding:10px 20px;
 			text-align:center;
 		}
-		#playerList table tbody {
+		#infoList table tbody {
 			padding:0; margin:0;
 			border-collapse:collapse;
 			border-spacing:0px;
 		}
-			#playerList table td {
+			#infoList table td {
 				background:#FFF;
 				padding:5px 10px;
 				text-align:center;
