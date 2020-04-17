@@ -274,3 +274,10 @@ img {
     transform: rotateY(3600deg);
   }
 }
+
+.radarChart {
+	display: inline-block;
+	position: relative;
+	left: 4em;
+	bottom: 5em;
+}
