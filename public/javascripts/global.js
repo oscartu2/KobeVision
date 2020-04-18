@@ -404,7 +404,7 @@ function drawRadar() {
   ////////////////////////////////////////////////////////////// 
   //////////////////////// Set-Up ////////////////////////////// 
   ////////////////////////////////////////////////////////////// 
-  var marginVals = 125
+  var marginVals = 150
   var margin = {top: marginVals, right: marginVals, bottom: marginVals, left: marginVals},
     width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
     height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
