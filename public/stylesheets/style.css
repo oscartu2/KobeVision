@@ -13,6 +13,8 @@ a {
 
 #wrapper {
 	padding-left:5em;
+	padding-right:10em;
+	width: 95em;
 }
 
 #teamCard1 {
@@ -104,6 +106,7 @@ a {
 	top: 57.5em;
 	left: 40em;
 	padding-right: 5em;
+	min-width: 68.25em;
 }
 	#infoList h2 {
 		padding:15px;
@@ -252,9 +255,15 @@ img {
 	z-index: 1;
 }
 
+.tooltip {
+	fill: #333333;
+}
+.legend {
+	font-family: 'Raleway', sans-serif;
+}
 .radarChart {
 	display: inline-block;
-	position: relative;
-	left: 5em;
-	top: -2em;
+	position: absolute;
+	left: 12em;
+	top: 5em;
 }

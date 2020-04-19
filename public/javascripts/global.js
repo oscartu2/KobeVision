@@ -7,8 +7,9 @@ var stats1 = {};
 var stats2 = {};
 var teamToId = {};
 const MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
-
+var radarData = [];
 var probability = [];
+var radarChart = null;
 
 
 // DOM Ready =============================================================
@@ -17,7 +18,7 @@ $(document).ready(function() {
   // Populate the team table on initial page load
   populateTeamTable();
 
-  drawRadar();
+  initRadar();
   $('#teamCard1').on('click', function() {
     currentlySelected = "1";
     $('.card1').css({"border":"5px solid #CCC"});
@@ -94,7 +95,8 @@ $(document).ready(function() {
     var card1 = document.getElementById('card1Year').innerHTML;
     var card2 = document.getElementById('card2Year').innerHTML;
     if (card1 === null || card2 === null || card1 === "" || card2 === "") {
-      $('#predictionMethod').text("Please choose 2 teams");
+      // $('#predictionMethod').text("Please choose 2 teams");
+      alert("Please choose 2 teams")
     } else {
       var methodElement = document.getElementById('methods');
       var method = methodElement.options[methodElement.selectedIndex].text;
@@ -315,7 +317,6 @@ function fillCard(event) {
     });
 
     getStatistics(currentlySelected, teamInfo, currentTeamId, seasons[0]);
-
     $.each(seasons, function() {
       var newOption = document.createElement("option");
       newOption.text = this;
@@ -333,15 +334,29 @@ function getStatistics(cardNumber, teamElement, id, season) {
     var srs = "<p>Simple Rating: " + res["SRS"] + "</p>";
     var ortg = "<p>Offensive Rating: " + res["ORtg"] + " (" + res["Rel ORtg"] + ")" + "</p>";
     var drtg = "<p>Defensive Rating: " + res["DRtg"] + " (" + res["Rel DRtg"] + ")" + "</p>";
+    var stats = null;
     if (cardNumber === "1") {
-      stats1 = {"NAME": res["Team"].replace("*",""), "WLR": Number(res["W/L%"]), "SRS": Number(res["SRS"]), "ORtg": Number(res["ORtg"]), "DRtg": Number(res["DRtg"])}
+      stats1 = {"NAME": res["Team"].replace("*",""),
+                 "WLR": Number(res["W/L%"]), 
+                 "SRS": Number(res["SRS"]), 
+                 "ORtg": Number(res["ORtg"]), 
+                 "DRtg": Number(res["DRtg"]),
+               }
     }
     if (cardNumber === "2") {
-      stats2 = {"NAME": res["Team"].replace("*",""), "WLR": Number(res["W/L%"]), "SRS": Number(res["SRS"]), "ORtg": Number(res["ORtg"]), "DRtg": Number(res["DRtg"])}
+      stats2 = {"NAME": res["Team"].replace("*",""), 
+                  "WLR": Number(res["W/L%"]), 
+                  "SRS": Number(res["SRS"]), 
+                  "ORtg": Number(res["ORtg"]), 
+                  "DRtg": Number(res["DRtg"]),
+                  "Pace": Number(res["Pace"])
+               }
     }
     $(teamElement).append(wlr, srs, ortg, drtg);
     probability = [];
   });
+
+
 
   $.getJSON("/db/roster/statistics/advanced/" + id + "/" + season, function(val) {
 
@@ -352,7 +367,6 @@ function getStatistics(cardNumber, teamElement, id, season) {
     for (var row of val) {
       sortByMinutes.push(row);
       sortByStarting.push(row);
-
     }
 
     // For starting 5 PER
@@ -379,10 +393,12 @@ function getStatistics(cardNumber, teamElement, id, season) {
     if (cardNumber === "1") {
       stats1["top5per"] = top5per;
       stats1["top12per"] = top12per;
+      updateRadar(currentTeamName, stats1, currentlySelected);
     }
     if (cardNumber === "2") {
       stats2["top5per"] = top5per;
       stats2["top12per"] = top12per;
+      updateRadar(currentTeamName, stats2, currentlySelected);
     }
     $(teamElement).append(per5, per12);
   });
@@ -398,60 +414,65 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
 
-function drawRadar() {
-  /* Radar chart design created by Nadieh Bremer - VisualCinnamon.com */
-      
-  ////////////////////////////////////////////////////////////// 
-  //////////////////////// Set-Up ////////////////////////////// 
-  ////////////////////////////////////////////////////////////// 
-  var marginVals = 150
-  var margin = {top: marginVals, right: marginVals, bottom: marginVals, left: marginVals},
-    width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
-    height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-      
-  ////////////////////////////////////////////////////////////// 
-  ////////////////////////// Data ////////////////////////////// 
-  ////////////////////////////////////////////////////////////// 
-  // To make it all fit on a radar chart, scale data:
-  // WLR = WLR * 1000
-  // SRS = SRS * 100
-  // Last 2: FTr and 3ptr from Team-misc, multiply by 1000
-  // Normalize data to be out of 100%
-  var data = [
-        [//2019-20 Lakers
-        {axis:"Win Loss Ratio",value:0.778},
-        {axis:"Simple Rating System",value:7.75/10},
-        //{axis:"Pace factor (Pos/48min)",value:100.9},
-        //{axis:"Offensive Rating",value:113.0},
-        //{axis:"Defensive Rating",value:105.6},
-        {axis:"Free Throw Attempt Rate",value:0.268},
-        {axis:"3-Pt Attempt Rate",value:0.355}   
-        ],[//2019-20 Raptors
-        {axis:"Win Loss Ratio",value:0.719},
-        {axis:"Simple Rating System",value:5.88/10},
-        // {axis:"Pace factor (Pos/48min)",value:100.6},
-        // {axis:"Offensive Rating",value:111.6},
-        // {axis:"Defensive Rating",value:105.2},
-        {axis:"Free Throw Attempt Rate",value:0.256},
-        {axis:"3-Pt Attempt Rate",value:0.418}
-        ]
-      ];
-  ////////////////////////////////////////////////////////////// 
-  //////////////////// Draw the Chart ////////////////////////// 
-  ////////////////////////////////////////////////////////////// 
-
-  var color = d3.scale.ordinal()
-    .range(["#EDC951","#CC333F","#00A0B0"]);
-    
+function initRadar() {
+  var color = d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"]);
   var radarChartOptions = {
-    w: width,
-    h: height,
-    margin: margin,
-    maxValue: 1,
-    levels: 5,
-    roundStrokes: true,
-    color: color
+      width: 500,
+      height: 500,
+      circles: {
+        maxValue: 1, 
+        levels: 5
+      }
   };
-  //Call function to draw the Radar chart
-  RadarChart(".radarChart", data, radarChartOptions);
+  radarChart = RadarChart()
+  d3.select('#radarChart').call(radarChart);
+  radarChart.options(radarChartOptions).update();
+}
+
+function updateRadar(teamName, stats, currentlySelected) {
+  if (radarData.length < 2) {
+    radarData.push({  
+                        "key":teamName,
+                        "values":[  
+                           {axis:"Win Loss Ratio",value:stats["WLR"]},
+                           {axis:"Simple Rating System",value:stats["SRS"]},
+                           {axis:"Pace factor (Pos/48min)",value:stats["Pace"]/100},
+                           {axis:"Offensive Rating",value:stats["ORtg"]/100},
+                           {axis:"Defensive Rating",value:stats["DRtg"]/100},
+                           {axis:"Free Throw Attempt Rate",value:0.268},
+                           {axis:"3-Pt Attempt Rate",value:0.355}   
+                        ]
+                      });
+  } else {
+    if (currentlySelected === "1") {
+      radarData[0] = {  
+                        "key":teamName,
+                        "values":[  
+                           {axis:"Win Loss Ratio",value:stats["WLR"]},
+                           {axis:"Simple Rating System",value:stats["SRS"]},
+                           {axis:"Pace factor (Pos/48min)",value:stats["Pace"]/100},
+                           {axis:"Offensive Rating",value:stats["ORtg"]/100},
+                           {axis:"Defensive Rating",value:stats["DRtg"]/100},
+                           {axis:"Free Throw Attempt Rate",value:0.268},
+                           {axis:"3-Pt Attempt Rate",value:0.355}   
+                        ]
+                      }
+    }
+    if (currentlySelected === "2") {
+      radarData[1] = {  
+                        "key":teamName,
+                        "values":[  
+                         {axis:"Win Loss Ratio",value:stats["WLR"]},
+                         {axis:"Simple Rating System",value:stats["SRS"]},
+                         {axis:"Pace factor (Pos/48min)",value:stats["Pace"]/100},
+                         {axis:"Offensive Rating",value:stats["ORtg"]/100},
+                         {axis:"Defensive Rating",value:stats["DRtg"]/100},
+                         {axis:"Free Throw Attempt Rate",value:0.256},
+                         {axis:"3-Pt Attempt Rate",value:0.418}
+                        ]
+                      }
+    }
+  }
+  radarChart.colors({'axis1': '#EDC951', 'axis2': "#00A0B0"});
+  radarChart.data(radarData).update();
 }
