@@ -7,7 +7,7 @@ var stats1 = {};
 var stats2 = {};
 var teamToId = {};
 const MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
-var radarData = [];
+var radarData = [{"key":"","values":[]},{"key":"","values":[]}];
 var probability = [];
 var radarChart = null;
 
@@ -116,18 +116,18 @@ $(document).ready(function() {
         winner = probability[getRandomInt(probability.length)];
       } else if (methodElement.selectedIndex === 2) {
         $('#predictionMethod').empty();
-        if (stats1["top5per"] > stats2["top5per"]) {
+        if (stats1["PER5"] > stats2["PER5"]) {
           winner = stats1["NAME"];
-        } else if (stats2["top5per"] > stats1["top5per"]) {
+        } else if (stats2["PER5"] > stats1["PER5"]) {
           winner = stats2["NAME"]
         } else {
           winner = "Tie! Lol";
         }
       } else if (methodElement.selectedIndex === 3) {
         $('#predictionMethod').empty();
-        if (stats1["top12per"] > stats2["top12per"]) {
+        if (stats1["PER12"] > stats2["PER12"]) {
           winner = stats1["NAME"];
-        } else if (stats2["top12per"] > stats1["top12per"]) {
+        } else if (stats2["PER12"] > stats1["PER12"]) {
           winner = stats2["NAME"]
         } else {
           winner = "Tie! Lol";
@@ -360,8 +360,8 @@ function getStatistics(cardNumber, teamElement, id, season) {
 
   $.getJSON("/db/roster/statistics/advanced/" + id + "/" + season, function(val) {
 
-    let top5per = 0;
-    let top12per = 0;
+    let PER5 = 0;
+    let PER12 = 0;
     let sortByStarting = [];
     let sortByMinutes = [];
     for (var row of val) {
@@ -381,23 +381,23 @@ function getStatistics(cardNumber, teamElement, id, season) {
 
     for (let i = 0; i < 12; i++) {
       if (i < 5) {
-        top5per += Number(sortByStarting[i]["PER"]) * Number(sortByStarting[i]["MINUTES_PLAYED"])
+        PER5 += Number(sortByStarting[i]["PER"]) * Number(sortByStarting[i]["MINUTES_PLAYED"])
       }
-      top12per += Number(sortByMinutes[i]["PER"]) * Number(sortByMinutes[i]["MINUTES_PLAYED"])
+      PER12 += Number(sortByMinutes[i]["PER"]) * Number(sortByMinutes[i]["MINUTES_PLAYED"])
     }
 
-    let per5 = "<p>Starting 5 PER: " + top5per.toFixed(2) + "</p>";
-    let per12 = "<p>Top 12 Adjusted PER: " + top12per.toFixed(2) + "</p>";
+    let per5 = "<p>Starting 5 PER: " + PER5.toFixed(2) + "</p>";
+    let per12 = "<p>Top 12 Adjusted PER: " + PER12.toFixed(2) + "</p>";
     
 
     if (cardNumber === "1") {
-      stats1["top5per"] = top5per;
-      stats1["top12per"] = top12per;
+      stats1["PER5"] = PER5;
+      stats1["PER12"] = PER12;
       updateRadar(currentTeamName, stats1, currentlySelected);
     }
     if (cardNumber === "2") {
-      stats2["top5per"] = top5per;
-      stats2["top12per"] = top12per;
+      stats2["PER5"] = PER5;
+      stats2["PER12"] = PER12;
       updateRadar(currentTeamName, stats2, currentlySelected);
     }
     $(teamElement).append(per5, per12);
@@ -430,48 +430,33 @@ function initRadar() {
 }
 
 function updateRadar(teamName, stats, currentlySelected) {
-  if (radarData.length < 2) {
-    radarData.push({  
-                        "key":teamName,
-                        "values":[  
-                           {axis:"Win Loss Ratio",value:stats["WLR"]},
-                           {axis:"Simple Rating System",value:stats["SRS"]},
-                           {axis:"Pace factor (Pos/48min)",value:stats["Pace"]/100},
-                           {axis:"Offensive Rating",value:stats["ORtg"]/100},
-                           {axis:"Defensive Rating",value:stats["DRtg"]/100},
-                           {axis:"Free Throw Attempt Rate",value:0.268},
-                           {axis:"3-Pt Attempt Rate",value:0.355}   
-                        ]
-                      });
-  } else {
-    if (currentlySelected === "1") {
-      radarData[0] = {  
-                        "key":teamName,
-                        "values":[  
-                           {axis:"Win Loss Ratio",value:stats["WLR"]},
-                           {axis:"Simple Rating System",value:stats["SRS"]},
-                           {axis:"Pace factor (Pos/48min)",value:stats["Pace"]/100},
-                           {axis:"Offensive Rating",value:stats["ORtg"]/100},
-                           {axis:"Defensive Rating",value:stats["DRtg"]/100},
-                           {axis:"Free Throw Attempt Rate",value:0.268},
-                           {axis:"3-Pt Attempt Rate",value:0.355}   
-                        ]
-                      }
-    }
-    if (currentlySelected === "2") {
-      radarData[1] = {  
-                        "key":teamName,
-                        "values":[  
+  if (currentlySelected === "1") {
+    radarData[0] = {  
+                      "key":teamName,
+                      "values":[  
                          {axis:"Win Loss Ratio",value:stats["WLR"]},
                          {axis:"Simple Rating System",value:stats["SRS"]},
                          {axis:"Pace factor (Pos/48min)",value:stats["Pace"]/100},
                          {axis:"Offensive Rating",value:stats["ORtg"]/100},
                          {axis:"Defensive Rating",value:stats["DRtg"]/100},
-                         {axis:"Free Throw Attempt Rate",value:0.256},
-                         {axis:"3-Pt Attempt Rate",value:0.418}
-                        ]
-                      }
-    }
+                         {axis:"Free Throw Attempt Rate",value:0.268},
+                         {axis:"3-Pt Attempt Rate",value:0.355}   
+                      ]
+                    }
+  }
+  if (currentlySelected === "2") {
+    radarData[1] = {  
+                      "key":teamName,
+                      "values":[  
+                       {axis:"Win Loss Ratio",value:stats["WLR"]},
+                       {axis:"Simple Rating System",value:stats["SRS"]},
+                       {axis:"Pace factor (Pos/48min)",value:stats["Pace"]/100},
+                       {axis:"Offensive Rating",value:stats["ORtg"]/100},
+                       {axis:"Defensive Rating",value:stats["DRtg"]/100},
+                       {axis:"Free Throw Attempt Rate",value:0.256},
+                       {axis:"3-Pt Attempt Rate",value:0.418}
+                      ]
+                    }
   }
   radarChart.colors({'axis1': '#EDC951', 'axis2': "#00A0B0"});
   radarChart.data(radarData).update();
