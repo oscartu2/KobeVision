@@ -36,4 +36,14 @@ router.get('/roster/statistics/advanced/:id/:year', function(req, res, next) {
 		res.json(docs);
 	});
 });
+
+/*GET roster based on team + season*/
+router.get('/roster/statistics/misc/:id/:year', function(req, res, next) {
+	var db = req.db;
+	var collection = db.get('misc')
+	collection.find({TEAMID: Number(req.params.id), YEAR: req.params.year}, {}, function(e, docs) {
+		res.json(docs);
+	});
+});
+
 module.exports = router;
