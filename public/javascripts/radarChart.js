@@ -57,7 +57,7 @@ function RadarChart() {
          display: true,
          symbol: 'circle', // 'circle', 'cross', 'diamond', 'triangle-up', 'triangle-down'
          toggle: 'circle',
-         position: { x: 10, y: 30 }
+         position: { x: 190, y: 10 }
       },
 
       color: d3.scale.category10()	   //Color function
@@ -278,7 +278,7 @@ function RadarChart() {
                 update_axis_legends.enter()
                     .append("text")
                     .attr("class", "axis_legend")
-                    .style("font-size", "11px")
+                    .style("font-size", "9.8px")
                     .attr("text-anchor", "middle")
                     .attr("dy", "0.35em")
                     .attr("x", function(d, i, j) { return calcX(null, options.circles.labelFactor, j); })
@@ -432,7 +432,7 @@ function RadarChart() {
                    .attr("cy", function(d, i){ return calcY(d.value, 0, i); })
 
                 if (options.legend.display) {
-                   var shape = d3.svg.symbol().type(options.legend.symbol).size(150)();
+                   var shape = d3.svg.symbol().type(options.legend.symbol).size(100)();
                    var foo;
                    legend_node.selectAll('cell').remove();
                    var colorScale = d3.scale.ordinal()

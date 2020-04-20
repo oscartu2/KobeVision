@@ -5,6 +5,7 @@ var currentTeamName = "";
 var currentSeason = "";
 var stats1 = {};
 var stats2 = {};
+var leagueAvgStats = {};
 var teamToId = {};
 const MILLISECONDS_IN_A_YEAR = 1000*60*60*24*365;
 var radarData = [{"key":"","values":[]},{"key":"","values":[]}];
@@ -18,7 +19,8 @@ $(document).ready(function() {
 
   // Populate the team table on initial page load
   populateTeamTable();
-
+  alert(welcomeMessage);
+  $("#predictionMethod").html(welcomeMessage);
   initRadar();
   $("#teamCard1").on("click", function() {
     currentlySelected = "1";
@@ -36,8 +38,9 @@ $(document).ready(function() {
 
   $(document).on("change",".dropdown-content", function() {
     var methodElement = document.getElementById("methods");
+    let idx = methodElement.selectedIndex;
     var method = methodElement.options[methodElement.selectedIndex].text;
-    $("#predictionMethod").text(this.value);
+    $("#predictionMethod").html(methodDescriptions[idx]);
   });
 
   $(document).on("change", ".card1Years", function () {
@@ -102,7 +105,9 @@ $(document).ready(function() {
       var methodElement = document.getElementById("methods");
       var method = methodElement.options[methodElement.selectedIndex].text;
       let winner = "";
-      if (methodElement.selectedIndex === 1) {
+      if (methodElement.selectedIndex === 0) {
+        alert("Please select a prediction method");
+      } else if (methodElement.selectedIndex === 1) {
         probability = [];
         var total = Number((stats1["WLR"]*1000).toFixed(0)) + Number((stats2["WLR"]*1000).toFixed(0));
         for (var i = 0; i < Number((stats1["WLR"]*1000).toFixed(0)); i++) {
@@ -142,24 +147,54 @@ $(document).ready(function() {
         }
       } else if (methodElement.selectedIndex === 5) {
         $("#predictionMethod").empty();
-        if (stats1["ORtg"] > stats2["ORtg"] && stats1["DRtg"] > stats2["DRtg"]) {
-          winner = stats1["NAME"];
-        } else if (stats1["ORtg"] < stats2["ORtg"] && stats1["DRtg"] < stats2["DRtg"]) {
-          winner = stats2["NAME"]
+        probability = [];
+        let regularSeason = true;
+        let pythagoreanExponent = 14.3;
+        let homeTeamORtg = stats1["ORtg"]*5;
+        let homeTeamDRtg = stats1["DRtg"]*5;
+        let awayTeamORtg = stats2["ORtg"]*5;
+        let awayTeamDRtg = stats2["DRtg"]*5;
+        if (regularSeason) {
+          homeTeamORtg *= 0.8;
+          homeTeamDRtg *= 0.8;
+          awayTeamORtg *= 0.8;
+          awayTeamDRtg *= 0.8;
         } else {
-          probability = [];
-          var total = ((stats1["SRS"]+10)*1000).toFixed(0) + ((stats2["SRS"]+10)*1000).toFixed(0);
-          console.log(total);
-          console.log(((stats1["SRS"]+10)*1000).toFixed(0));
-          for (var i = 0; i < ((stats1["SRS"]+10)*1000).toFixed(0); i++) {
-            probability.push(stats1["NAME"]);
-          }
-          for (var i = probability.length - 1; i < total; i++) {
-            probability.push(stats2["NAME"]);
-          }
-          $("#predictionMethod").empty();
-          winner = probability[getRandomInt(probability.length)];
+          homeTeamORtg *= 0.9;
+          homeTeamDRtg *= 0.9;
+          awayTeamORtg *= 0.8;
+          awayTeamDRtg *= 0.8;
         }
+        let homeProjectedPointsScored = (homeTeamORtg + leagueAvgStats["ORtg"])/100 * (82*stats1["PACE"]);
+        let homeProjectedPointsAllowed = (leagueAvgStats["DRtg"] - homeTeamDRtg)/100 * (82*stats1["PACE"]);
+        let homeWinningPct = Math.pow(homeProjectedPointsScored, pythagoreanExponent)/(Math.pow(homeProjectedPointsScored, pythagoreanExponent) + Math.pow(homeProjectedPointsAllowed, pythagoreanExponent))
+        let homeCARMELO = 1504.6 - (450 * getBaseLog(10, ((1/homeWinningPct)-1)));
+
+        let awayProjectedPointsScored = (awayTeamORtg + leagueAvgStats["ORtg"])/100 * (82*stats2["PACE"]);
+        let awayProjectedPointsAllowed = (leagueAvgStats["DRtg"] - awayTeamDRtg)/100 * (82*stats2["PACE"]);
+        let awayWinningPct = Math.pow(awayProjectedPointsScored, pythagoreanExponent)/(Math.pow(awayProjectedPointsScored, pythagoreanExponent) + Math.pow(awayProjectedPointsAllowed, pythagoreanExponent))
+        let awayCARMELO = 1504.6 - (450 * getBaseLog(10, ((1/awayWinningPct)-1)));
+
+        // From 538: but we also make adjustments for home-court advantage 
+        // (the home team gets a boost of about 92 rating points), fatigue 
+        // (teams that played the previous day are given a penalty of 46 rating points), 
+        // travel (teams are penalized based on the distance they travel from their previous game) 
+        // and altitude (teams that play at higher altitudes are given an extra bonus when they 
+        // play at home, on top of the standard home-court advantage)
+        // if (playedYesterday) += 46, if (higherAltitude) += altitudeDiff?
+        let homeBonus = 92;
+        let awayBonus = 0;
+        let teamRatingDifferential = homeCARMELO - awayCARMELO;
+        let bonusDifferential = homeBonus - awayBonus;
+        let winProbability = 1/(Math.pow(10,(((-1)*(teamRatingDifferential+bonusDifferential))/400))+1);
+        var total = Number((winProbability*1000).toFixed(0)) + Number(((1-winProbability)*1000).toFixed(0));
+        for (var i = 0; i < Number((winProbability*1000).toFixed(0)); i++) {
+          probability.push(stats1["NAME"]);
+        }
+        for (var i = probability.length - 1; i < total; i++) {
+          probability.push(stats2["NAME"]);
+        }
+        winner = probability[getRandomInt(probability.length)];
       }
       $("#predictionMethod").text(winner);
     }
@@ -183,7 +218,7 @@ function populateTeamTable() {
       if (this.nbaFranchise === "1" && this.teamId !== "37") {
         teamToId[this.fullName] = this.teamId;
         tableContent += "<tr>";
-        tableContent += "<td><a href=\"#\" class=\"linkdeleteuser\" rel=\"" + this.teamId + "\">" + this.teamId + "</a></td>";
+        tableContent += "<td>" + this.teamId + "</td>";
         tableContent += "<td><a href=\"#\" class=\"linkshowteam\" rel=\"" + this.fullName + "\">" + this.fullName + "</a></td>";
         if (this.teamId === "10") {
           this.logo = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Pistons_logo17.svg/1024px-Pistons_logo17.svg.png";
@@ -326,7 +361,7 @@ function fillCard(event) {
   $(teamName).text(thisTeamObject.fullName);
   $(teamPlayers).css({"position": "absolute", "display": "inline", "left": "1.25em", "top":"28.2em"});
   $(teamAdvanced).css({"position": "absolute", "display": "inline", "left": "9.8em", "top":"28.2em"});
-  $(".container" + currentlySelected).css({"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"});
+  // $(".container" + currentlySelected).css({"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"});
 
   var yearElement = document.getElementById(teamYear);
   var seasons = [];
@@ -384,7 +419,11 @@ function getStatistics(cardNumber, teamElement, id, season) {
 
   $.getJSON("/db/roster/statistics/misc/" + id + "/" + season, function(val) {
     res = val[0]; // res may have to be val[0][0] ???
-    console.log(res); 
+    if (val[0][0] === undefined) {
+      res = val[0];
+    } else {
+      res = val[0][0];
+    }
     if (cardNumber === "1") {
       stats1["TS%"] = Number(res["TRUE_SHOOTING%"]);
       stats1["ORB%"] = Number(res["ORB%"])/100;
@@ -407,6 +446,18 @@ function getStatistics(cardNumber, teamElement, id, season) {
       stats2["FTFGA%"] = Number(res["FT_PER_FIELDGOALATTEMPT%"]);
       stats2["OPP_FTFGA%"] = Number(res["OPP_FT_PER_FIELDGOALATTEMPT%"]);
     }
+  });
+
+  // Get league avg
+  $.getJSON("/db/roster/statistics/misc/0/" + season, function(val) {
+    res = val[0]; // res may have to be val[0][0] ???
+    if (val[0][0] === undefined) {
+      res = val[0];
+    } else {
+      res = val[0][0];
+    }
+    leagueAvgStats["ORtg"] = res["ORTG"];
+    leagueAvgStats["DRtg"] = res["DRTG"];
   });
 
   $.getJSON("/db/roster/statistics/advanced/" + id + "/" + season, function(val) {
@@ -463,6 +514,10 @@ function calculateAge(dob) {
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getBaseLog(x, y) {
+  return Math.log(y) / Math.log(x);
 }
 
 function initRadar() {

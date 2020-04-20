@@ -169,6 +169,24 @@ def get_team_misc(season_end_year):
         df['TEAMID'] = df['TEAMABRV'].apply(lambda x: TEAM_ABBR_TO_TEAM_ID[x])
         return df
 
+def get_league_avg_misc(season_end_year):
+    r = get(f'https://widgets.sports-reference.com/wg.fcgi?css=1&site=bbr&url=%2Fleagues%2FNBA_{season_end_year}.html&div=div_misc_stats')
+    df = None
+    if r.status_code==200:
+        soup = BeautifulSoup(r.content, 'html.parser')
+        table = soup.find('table')
+        df = pd.read_html(str(table))[0]
+        df.columns = list(map(lambda x: x[1], list(df.columns)))
+        league_avg_index = df[df['Team']=='League Average'].index[0]
+        df = df[league_avg_index:]
+        print(df)
+        df = df.drop(['Rk', 'Age'], axis=1)
+        df.rename(columns = {'Pace': 'PACE', 'Arena': 'ARENA', 'Attend.': 'ATTENDANCE', 'Attend./G': 'ATTENDANCE/G'}, inplace=True)
+        df.loc[:, 'YEAR'] = f'{season_end_year-1}-{str(season_end_year)[2:]}'
+        df['TEAMABRV'] = "LG_AVG"
+        df['TEAMID'] = "0"
+        return df
+
 def get_roster_stats(team, season_end_year, data_format='PER_GAME', playoffs=False):
     if playoffs:
         period = 'playoffs'

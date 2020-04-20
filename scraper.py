@@ -4,7 +4,7 @@
 import pandas as pd
 import numpy as np
 import multiprocessing
-from br_scraper.basketball_reference_scraper.teams import get_roster, get_roster_advanced_stats, get_team_stats, get_opp_stats, get_roster_stats, get_team_misc
+from br_scraper.basketball_reference_scraper.teams import get_roster, get_roster_advanced_stats, get_team_stats, get_opp_stats, get_roster_stats, get_team_misc, get_league_avg_misc
 
 team_shortname = ["ATL", "BOS", "BRK", "CHO", "CHI", \
 				  "CLE", "DAL", "DEN", "DET", "GSW", \
@@ -100,8 +100,16 @@ def write_roster_misc_stats():
 	start = inaug
 	end = current+1
 	df = pd.concat([pd.DataFrame(get_team_misc(y)) for y in range(start,end)], ignore_index=True)
-	input(df)
 	df.to_csv('misc.csv', index=False, mode='a', header=False, encoding='utf-8-sig')
 	print("Done")
 
-write_roster_misc_stats()
+def write_league_avg_misc_stats():
+	inaug = 1950
+	current = 2020
+	start = inaug
+	end = current+1
+	df = pd.concat([pd.DataFrame(get_league_avg_misc(y)) for y in range(start,end)], ignore_index=True)
+	df.to_csv('league_avg_misc.csv', index=False, mode='a', header=False, encoding='utf-8-sig')
+	print("Done")
+
+write_league_avg_misc_stats()

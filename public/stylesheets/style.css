@@ -169,23 +169,33 @@ img {
 }
 
 /* Add some padding inside the card container */
+/*{"border": "1px solid #CCC", "background": "rgba(80,120,255,0.05)"}*/
 .container1 {
+	padding:1em;
+	border:1px solid #CCC;
+	background:rgba(80,120,255,0.05);
+	position: absolute;
+	top: 21.5em;
+	width: 16.9em;
+	height: 20.45em;
+}
+.container2 {
+	padding:1em;
+	border:1px solid #CCC;
+	background:rgba(80,120,255,0.05);
+	position: absolute;
+	top: 21.5em;
+	width: 16.9em;
+	height: 20.45em;
+}
+/*.container2 {
 	padding:1em;
 	border:0px;
 	background:rgba(0,0,0,0);
 	position: absolute;
 	top: 21.5em;
 	width: 16.9em;
-}
-
-.container2 {
-	padding:15px;
-	border:0px;
-	background:rgba(0,0,0,0);
-	position: absolute;
-	top: 21.5em;
-	width: 16.9em;
-}
+}*/
 
 /* DROPDOWN */
 /* The container <div> - needed to position the dropdown content */
@@ -198,11 +208,19 @@ img {
 }
 	.dropdown h2 {
 	  	width:34em;
-		height: 28em;
+		height:28em;
 		position: absolute;
 		padding:15px;
 		border:1px solid #CCC;
 		background:rgba(80,120,255,0.05);
+	}
+
+	.dropdown p {
+		position: absolute;
+		top: 5em;
+		font-weight: normal;
+		font-size: 75%;
+		max-width: 20em;
 	}
 
 /* Prediction Dropdown */
@@ -214,7 +232,7 @@ img {
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
   top: 5em;
-  left: 2.8em;
+  left: 1.5em;
 }
 .predMethod {
 	display: inline-block;
@@ -226,7 +244,7 @@ img {
 	display: inline-block;
 	position: absolute;
 	top: 5em;
-	left: 20em;
+	left: 18em;
 }
 
 
@@ -258,12 +276,13 @@ img {
 .tooltip {
 	fill: #333333;
 }
-.legend {
-	font-family: 'Raleway', sans-serif;
+.cell {
+	font-size: 18px;
 }
 .radarChart {
 	display: inline-block;
 	position: absolute;
-	left: 12em;
+	left: 13.25em;
 	top: 5em;
+	font-weight: normal;
 }
