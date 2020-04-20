@@ -1,3 +1,5 @@
+// Variables and lookup tables
+
 let id_to_color = {
 				"1":"#E03A3E",
 				"2":"#007A33",
@@ -40,3 +42,18 @@ let methodDescriptions = {
 						5: "Predicts the winning team by using <a href=\"https://fivethirtyeight.com/methodology/how-our-nba-predictions-work/\">538's CARM-ELO rating</a>. <br><br>The CARM-ELO rating uses each team's Offensive Rating and Defensive Rating with some calculation to get Projected Points Scored and Projected Points Allowed, respectively, which then produces a generic expected \"winning percentage\" via the <a href=\"https://en.wikipedia.org/wiki/Pythagorean_expectation#Use_in_basketball\">Pythagorean expectation</a>. <br><br>This is then converted into an <a href=\"https://en.wikipedia.org/wiki/Elo_rating_system#Mathematical_details\">ELO rating</a> and then calculating the winning probability of the home team."
 					}
 
+// Functions
+
+function calculateAge(dob) { 
+    var date_array = dob.split("-")
+    var years_elapsed = (new Date() - new Date(date_array[0],date_array[1],date_array[2]))/(MILLISECONDS_IN_A_YEAR);
+    return parseInt(years_elapsed);
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+function getBaseLog(x, y) {
+  return Math.log(y) / Math.log(x);
+}

@@ -255,10 +255,6 @@ function populateInfoTable(option, teamId, teamName, season) {
   } else if (option === "ADVANCED") {
     endpointBase = "/db/roster/statistics/advanced/";
     title = season + " " + teamName + " Advanced Stats";
-    /*Maybe update to 
-    ["Rk", "Name", "Age", "G", "MP", "PER", "TS%", "3PAr", "FTr", "ORB%",
-     "DRB%", "TRB%", "AST%", "STL%", "BLK%", "TOV%", "USG%", "Unnamed: 17", 
-     "OWS", "DWS", "WS", "WS/48","Unnamed: 22", "OBPM", "DBPM", "BPM", "VORP"]*/
     tableHeaders = "<tr>";
     tableHeaders += "<th>Rank</th>";
     tableHeaders += "<th>Name</th>";
@@ -504,20 +500,6 @@ function getStatistics(cardNumber, teamElement, id, season) {
     }
     $(teamElement).append(per5, per12);
   });
-}
-
-function calculateAge(dob) { 
-    var date_array = dob.split("-")
-    var years_elapsed = (new Date() - new Date(date_array[0],date_array[1],date_array[2]))/(MILLISECONDS_IN_A_YEAR);
-    return parseInt(years_elapsed);
-}
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
-
-function getBaseLog(x, y) {
-  return Math.log(y) / Math.log(x);
 }
 
 function initRadar() {
