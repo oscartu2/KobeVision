@@ -1,5 +1,5 @@
-from basketball_reference_web_scraper import client
-from basketball_reference_scraper.players import get_stats, get_game_logs
+# from basketball_reference_web_scraper import client
+# from basketball_reference_scraper.players import get_stats, get_game_logs
 
 import pandas as pd
 import numpy as np
@@ -13,12 +13,17 @@ team_shortname = ["ATL", "BOS", "BRK", "CHO", "CHI", \
 				  "OKC", "ORL", "PHI", "PHO", "POR", \
 				  "SAC", "SAS", "TOR", "UTA", "WAS"]
 
-team_shortname_to_teamid = {"ATL":1,"BOS":2,"BRK":4,"CHO":5,"CHI":6, \
-							"CLE":7,"DAL":8,"DEN":9,"DET":10,"GSW":11, \
-							"HOU":14,"IND":15,"LAC":16,"LAL":17,"MEM":19, \
-							"MIA":20,"MIL":21,"MIN":22,"NOP":23,"NYK":24, \
-							"OKC":25,"ORL":26,"PHI":27,"PHO":28,"POR":29, \
-							"SAC":30,"SAS":31,"TOR":38,"UTA":40,"WAS":41}
+team_shortname_to_teamid = {"ATL":1,"TRI":1,"MLH":1,"STL":1,"BOS":2, \
+							"BRK":4,"NJA":4,"NYA":4,"NYN":4,"NJN":4, \
+							"CHO":5,"CHH":5,"CHA":5,"CHI":6, \
+							"CLE":7,"DAL":8,"DEN":9,"DNR":9,"DNA":9, \
+							"DET":10,"FTW":10,"GSW":11,"PHW":11,"SFW":11, \
+							"HOU":14,"SDR":14,"IND":15,"INA":15,"LAC":16,"BUF":16,"SDC":16, \
+							"LAL":17,"MNL":17,"MEM":19,"VAN":19, \
+							"MIA":20,"MIL":21,"MIN":22,"NOP":23,"NOH":23,"NOK":23,"NYK":24, \
+							"OKC":25,"SEA":25,"ORL":26,"PHI":27,"SYR":27,"PHO":28,"POR":29, \
+							"SAC":30,"ROC":30,"CIN":30,"KCO":30,"KCK":30,"SAS":31,"DLC":31,"TEX":31,"SAA":31, \
+							"TOR":38,"UTA":40,"NOJ":40,"WAS":41,"CHP":41,"CHZ":41,"BAL":41,"CAP":41,"WSB":41}
 
 team_shortname_to_season_start = \
 {"ATL":[{"TRI":[1950,1951]}, {"MLH":[1952,1955]}, {"STL":[1956,1968]}, {"ATL":[1969,2020]}],\
@@ -54,11 +59,7 @@ team_shortname_to_season_start = \
 
 # CHO has no 2002-03 and 2003-04 season
 
-# GET_ROSTER_STATS(team_shortname, season_year_end, data_format='TOTALS|')
-# stats = get_roster_stats('ATL', 1988, data_format='TOTALS', playoffs=False)
-# # print(stats)
-# print(get_roster('MLH'))
-def write_roster_stats():
+def write_roster_advanced_stats():
 	for team in team_shortname:
 		teamId = team_shortname_to_teamid[team]
 		print("Starting teamId: " + str(teamId))
@@ -74,8 +75,6 @@ def write_roster_stats():
 			df['TEAMABRV'] = [team_abrv for i in range(len(df))]
 			df.to_csv('advanced.csv', index=False, mode='a', header=False, encoding='utf-8-sig')
 	print("Done")
-
-write_roster_stats()
 
 def write_roster():
 	for team in team_shortname:
@@ -94,3 +93,15 @@ def write_roster():
 			df['TEAMABRV'] = [team_abrv for i in range(len(df))]
 			df.to_csv('roster.csv', index=False, mode='a', header=False, encoding='utf-8-sig')
 	print("Done")
+
+def write_roster_misc_stats():
+	inaug = 1950
+	current = 2020
+	start = inaug
+	end = current+1
+	df = pd.concat([pd.DataFrame(get_team_misc(y)) for y in range(start,end)], ignore_index=True)
+	input(df)
+	df.to_csv('misc.csv', index=False, mode='a', header=False, encoding='utf-8-sig')
+	print("Done")
+
+write_roster_misc_stats()

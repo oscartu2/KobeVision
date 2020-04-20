@@ -1,12 +1,88 @@
 import pandas as pd
 from requests import get
 from bs4 import BeautifulSoup
+TEAM_ABBR_TO_TEAM_ID = {"ATL":1,"TRI":1,"MLH":1,"STL":1,"BOS":2, \
+                        "BRK":4,"NJA":4,"NYA":4,"NYN":4,"NJN":4, \
+                        "CHO":5,"CHH":5,"CHA":5,"CHI":6, \
+                        "CLE":7,"DAL":8,"DEN":9,"DNR":9,"DNA":9, \
+                        "DET":10,"FTW":10,"GSW":11,"PHW":11,"SFW":11, \
+                        "HOU":14,"SDR":14,"IND":15,"INA":15,"LAC":16,"BUF":16,"SDC":16, \
+                        "LAL":17,"MNL":17,"MEM":19,"VAN":19, \
+                        "MIA":20,"MIL":21,"MIN":22,"NOP":23,"NOH":23,"NOK":23,"NYK":24, \
+                        "OKC":25,"SEA":25,"ORL":26,"PHI":27,"SYR":27,"PHO":28,"POR":29, \
+                        "SAC":30,"ROC":30,"CIN":30,"KCO":30,"KCK":30,"SAS":31,"DLC":31,"TEX":31,"SAA":31, \
+                        "TOR":38,"UTA":40,"NOJ":40,"WAS":41,"CHP":41,"CHZ":41,"BAL":41,"CAP":41,"WSB":41}
 
-try:
-    from constants import TEAM_TO_TEAM_ABBR
-except:
-    from basketball_reference_scraper.constants import TEAM_TO_TEAM_ABBR
-
+TEAM_TO_TEAM_ABBR = {
+        'ATLANTA HAWKS': 'ATL',
+        'ST. LOUIS HAWKS': 'STL',
+        'MILWAUKEE HAWKS': 'MLH',
+        'TRI-CITIES BLACKHAWKS': 'TRI',
+        'BOSTON CELTICS': 'BOS',
+        'BROOKLYN NETS': 'BRK',
+        'NEW JERSEY NETS' : 'NJN',
+        'NEW YORK NETS' : 'NYN',
+        'NEW YORK AMERICANS': 'NYA',
+        'NEW JERSEY AMERICANS': 'NJA',
+        'CHICAGO BULLS': 'CHI',
+        'CHARLOTTE HORNETS': 'CHO',
+        'CHARLOTTE BOBCATS' : 'CHA',
+        'CLEVELAND CAVALIERS': 'CLE',
+        'DALLAS MAVERICKS': 'DAL',
+        'DENVER NUGGETS': 'DEN',
+        'DETROIT PISTONS': 'DET',
+        'FORT WAYNE PISTONS': 'FTW',
+        'GOLDEN STATE WARRIORS': 'GSW',
+        'SAN FRANCISCO WARRIORS': 'SFW',
+        'PHILADELPHIA WARRIORS': 'PHW',
+        'HOUSTON ROCKETS': 'HOU',
+        'SAN DIEGO ROCKETS': 'SDR',
+        'INDIANA PACERS': 'IND',
+        'LOS ANGELES CLIPPERS': 'LAC',
+        'SAN DIEGO CLIPPERS': 'SDC',
+        'BUFFALO BRAVES': 'BUF',
+        'LOS ANGELES LAKERS': 'LAL',
+        'MINNEAPOLIS LAKERS': 'MNL',
+        'MEMPHIS GRIZZLIES': 'MEM',
+        'VANCOUVER GRIZZLIES' : 'VAN',
+        'MIAMI HEAT': 'MIA',
+        'MILWAUKEE BUCKS': 'MIL',
+        'MINNESOTA TIMBERWOLVES': 'MIN',
+        'NEW ORLEANS PELICANS' : 'NOP',
+        'NEW ORLEANS/OKLAHOMA CITY HORNETS' : 'NOK',
+        'NEW ORLEANS HORNETS' : 'NOH',
+        'NEW YORK KNICKS' : 'NYK',
+        'OKLAHOMA CITY THUNDER' : 'OKC',
+        'SEATTLE SUPERSONICS' : 'SEA',
+        'ORLANDO MAGIC' : 'ORL',
+        'PHILADELPHIA 76ERS' : 'PHI',
+        'SYRACUSE NATIONALS' : 'SYR',
+        'PHOENIX SUNS' : 'PHO',
+        'PORTLAND TRAIL BLAZERS' : 'POR',
+        'SACRAMENTO KINGS' : 'SAC',
+        'KANSAS CITY KINGS' : 'KCK',
+        'KANSAS CITY-OMAHA KINGS' : 'KCO',
+        'CINCINNATI ROYALS' : 'CIN',
+        'ROCHESTER ROYALS': 'ROC',
+        'SAN ANTONIO SPURS' : 'SAS',
+        'TORONTO RAPTORS' : 'TOR',
+        'UTAH JAZZ' : 'UTA',
+        'NEW ORLEANS JAZZ' : 'NOJ',
+        'WASHINGTON WIZARDS' : 'WAS',
+        'WASHINGTON BULLETS' : 'WSB',
+        'CAPITAL BULLETS' : 'CAP',
+        'BALTIMORE BULLETS' : 'BAL',
+        'CHICAGO ZEPHYRS' : 'CHZ',
+        'CHICAGO PACKERS' : 'CHP',
+}
+defunct = {        # DEFUNCT FRANCHISES
+        'ANDERSON PACKERS': 'AND',
+        'CHICAGO STAGS': 'CHI',
+        'INDIANAPOLIS OLYMPIANS': 'IND',
+        'SHEBOYGAN RED SKINS': 'SRS',
+        'ST. LOUIS BOMBERS': 'SLB',
+        'WASHINGTON CAPITOLS' : 'WAS',
+        'WATERLOO HAWKS': 'WAT'}
 def get_roster(team, season_end_year):
     r = get(f'https://widgets.sports-reference.com/wg.fcgi?css=1&site=bbr&url=%2Fteams%2F{team}%2F{season_end_year}.html&div=div_roster')
     df = None
@@ -74,7 +150,7 @@ def get_opp_stats(team, season_end_year, data_format='PER_GAME'):
         s = df[df['TEAM']==team]
         return pd.Series(index=list(s.columns), data=s.values.tolist()[0])
 
-def get_team_misc(team, season_end_year):
+def get_team_misc(season_end_year):
     r = get(f'https://widgets.sports-reference.com/wg.fcgi?css=1&site=bbr&url=%2Fleagues%2FNBA_{season_end_year}.html&div=div_misc_stats')
     df = None
     if r.status_code==200:
@@ -85,12 +161,13 @@ def get_team_misc(team, season_end_year):
         league_avg_index = df[df['Team']=='League Average'].index[0]
         df = df[:league_avg_index]
         df['Team'] = df['Team'].apply(lambda x: x.replace('*', '').upper())
-        df['TEAM'] = df['Team'].apply(lambda x: TEAM_TO_TEAM_ABBR[x])
-        df = df.drop(['Rk', 'Team'], axis=1)
-        df.rename(columns = {'Age': 'AGE', 'Pace': 'PACE', 'Arena': 'ARENA', 'Attend.': 'ATTENDANCE', 'Attend./G': 'ATTENDANCE/G'}, inplace=True)
-        df.loc[:, 'SEASON'] = f'{season_end_year-1}-{str(season_end_year)[2:]}'
-        s = df[df['TEAM']==team]
-        return pd.Series(index=list(s.columns), data=s.values.tolist()[0])
+        df = df.drop(df[df['Team'].isin(defunct)].index)
+        df = df.drop(['Rk', 'Age'], axis=1)
+        df.rename(columns = {'Pace': 'PACE', 'Arena': 'ARENA', 'Attend.': 'ATTENDANCE', 'Attend./G': 'ATTENDANCE/G'}, inplace=True)
+        df.loc[:, 'YEAR'] = f'{season_end_year-1}-{str(season_end_year)[2:]}'
+        df['TEAMABRV'] = df['Team'].apply(lambda x: TEAM_TO_TEAM_ABBR[x])
+        df['TEAMID'] = df['TEAMABRV'].apply(lambda x: TEAM_ABBR_TO_TEAM_ID[x])
+        return df
 
 def get_roster_stats(team, season_end_year, data_format='PER_GAME', playoffs=False):
     if playoffs:
