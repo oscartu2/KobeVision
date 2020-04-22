@@ -12,6 +12,7 @@ var radarData = [{"key":"","values":[]},{"key":"","values":[]}];
 var radarColors = [{"":"#FFFFFF"},{"":"#FFFFFF"}]
 var probability = [];
 var radarChart = null;
+var barChart = null;
 
 
 // DOM Ready =============================================================
@@ -21,7 +22,7 @@ $(document).ready(function() {
   populateTeamTable();
   alert(welcomeMessage);
   $("#predictionMethod").html(welcomeMessage);
-  initRadar();
+  initCharts();
   $("#teamCard1").on("click", function() {
     currentlySelected = "1";
     $(".card1").css({"border":"5px solid #CCC"});
@@ -111,37 +112,37 @@ $(document).ready(function() {
         probability = [];
         var total = Number((stats1["WLR"]*1000).toFixed(0)) + Number((stats2["WLR"]*1000).toFixed(0));
         for (var i = 0; i < Number((stats1["WLR"]*1000).toFixed(0)); i++) {
-          probability.push(stats1["NAME"]);
+          probability.push(stats1["TEAM"]);
         }
         for (var i = probability.length - 1; i < total; i++) {
-          probability.push(stats2["NAME"]);
+          probability.push(stats2["TEAM"]);
         }
         $("#predictionMethod").empty();
         winner = probability[getRandomInt(probability.length)];
       } else if (methodElement.selectedIndex === 2) {
         $("#predictionMethod").empty();
         if (stats1["PER5"] > stats2["PER5"]) {
-          winner = stats1["NAME"];
+          winner = stats1["TEAM"];
         } else if (stats2["PER5"] > stats1["PER5"]) {
-          winner = stats2["NAME"]
+          winner = stats2["TEAM"]
         } else {
           winner = "Tie! Lol";
         }
       } else if (methodElement.selectedIndex === 3) {
         $("#predictionMethod").empty();
         if (stats1["PER12"] > stats2["PER12"]) {
-          winner = stats1["NAME"];
+          winner = stats1["TEAM"];
         } else if (stats2["PER12"] > stats1["PER12"]) {
-          winner = stats2["NAME"]
+          winner = stats2["TEAM"]
         } else {
           winner = "Tie! Lol";
         }
       } else if (methodElement.selectedIndex === 4) {
         $("#predictionMethod").empty();
         if (stats1["SRS"] > stats2["SRS"]) {
-          winner = stats1["NAME"];
+          winner = stats1["TEAM"];
         } else if (stats2["SRS"] > stats1["SRS"]) {
-          winner = stats2["NAME"]
+          winner = stats2["TEAM"]
         } else {
           winner = "Tie! Lol";
         }
@@ -150,28 +151,29 @@ $(document).ready(function() {
         probability = [];
         let regularSeason = true;
         let pythagoreanExponent = 14.3;
-        let homeTeamORtg = stats1["ORtg"]*5;
-        let homeTeamDRtg = stats1["DRtg"]*5;
-        let awayTeamORtg = stats2["ORtg"]*5;
-        let awayTeamDRtg = stats2["DRtg"]*5;
+        let homeTeamORTG = stats1["ORTG"]*5;
+        let homeTeamDRTG = stats1["DRTG"]*5;
+        let awayTeamORTG = stats2["ORTG"]*5;
+        let awayTeamDRTG = stats2["DRTG"]*5;
         if (regularSeason) {
-          homeTeamORtg *= 0.8;
-          homeTeamDRtg *= 0.8;
-          awayTeamORtg *= 0.8;
-          awayTeamDRtg *= 0.8;
+          homeTeamORTG *= 0.8;
+          homeTeamDRTG *= 0.8;
+          awayTeamORTG *= 0.8;
+          awayTeamDRTG *= 0.8;
         } else {
-          homeTeamORtg *= 0.9;
-          homeTeamDRtg *= 0.9;
-          awayTeamORtg *= 0.8;
-          awayTeamDRtg *= 0.8;
+          homeTeamORTG *= 0.9;
+          homeTeamDRTG *= 0.9;
+          awayTeamORTG *= 0.8;
+          awayTeamDRTG *= 0.8;
         }
-        let homeProjectedPointsScored = (homeTeamORtg + leagueAvgStats["ORtg"])/100 * (82*stats1["PACE"]);
-        let homeProjectedPointsAllowed = (leagueAvgStats["DRtg"] - homeTeamDRtg)/100 * (82*stats1["PACE"]);
-        let homeWinningPct = Math.pow(homeProjectedPointsScored, pythagoreanExponent)/(Math.pow(homeProjectedPointsScored, pythagoreanExponent) + Math.pow(homeProjectedPointsAllowed, pythagoreanExponent))
+        let homeProjectedPointsScored = (homeTeamORTG + leagueAvgStats["ORTG"])/100 * (82*stats1["PACE"]);
+        let homeProjectedPointsAllowed = (leagueAvgStats["DRTG"] + homeTeamDRTG)/100 * (82*stats1["PACE"]);
+
+        let homeWinningPct = Math.pow(homeProjectedPointsScored, pythagoreanExponent)/(Math.pow(homeProjectedPointsScored, pythagoreanExponent) + Math.pow(homeProjectedPointsAllowed, pythagoreanExponent));
         let homeCARMELO = 1504.6 - (450 * getBaseLog(10, ((1/homeWinningPct)-1)));
 
-        let awayProjectedPointsScored = (awayTeamORtg + leagueAvgStats["ORtg"])/100 * (82*stats2["PACE"]);
-        let awayProjectedPointsAllowed = (leagueAvgStats["DRtg"] - awayTeamDRtg)/100 * (82*stats2["PACE"]);
+        let awayProjectedPointsScored = (awayTeamORTG + leagueAvgStats["ORTG"])/100 * (82*stats2["PACE"]);
+        let awayProjectedPointsAllowed = (leagueAvgStats["DRTG"] + awayTeamDRTG)/100 * (82*stats2["PACE"]);
         let awayWinningPct = Math.pow(awayProjectedPointsScored, pythagoreanExponent)/(Math.pow(awayProjectedPointsScored, pythagoreanExponent) + Math.pow(awayProjectedPointsAllowed, pythagoreanExponent))
         let awayCARMELO = 1504.6 - (450 * getBaseLog(10, ((1/awayWinningPct)-1)));
 
@@ -189,10 +191,10 @@ $(document).ready(function() {
         let winProbability = 1/(Math.pow(10,(((-1)*(teamRatingDifferential+bonusDifferential))/400))+1);
         var total = Number((winProbability*1000).toFixed(0)) + Number(((1-winProbability)*1000).toFixed(0));
         for (var i = 0; i < Number((winProbability*1000).toFixed(0)); i++) {
-          probability.push(stats1["NAME"]);
+          probability.push(stats1["TEAM"]);
         }
         for (var i = probability.length - 1; i < total; i++) {
-          probability.push(stats2["NAME"]);
+          probability.push(stats2["TEAM"]);
         }
         winner = probability[getRandomInt(probability.length)];
       }
@@ -375,42 +377,32 @@ function fillCard(event) {
       return Number(b.substring(0,4)) - Number(a.substring(0,4));
     });
 
-    getStatistics(currentlySelected, teamInfo, currentTeamId, seasons[0]);
     $.each(seasons, function() {
       var newOption = document.createElement("option");
       newOption.text = this;
       yearElement.add(newOption);
     });
+    let stats = null;
+    if (currentlySelected === "1") {
+      stats = stats1;
+    } else {
+      stats = stats2;
+    }
+    getStatistics(stats, teamInfo, currentTeamId, seasons[0]);
   });
 };
 
-function getStatistics(cardNumber, teamElement, id, season) {
+function getStatistics(stats, teamElement, id, season) {
   $.getJSON("/db/statistics/" + id + "/" + season, function (val) {
     // For some reason getJSON returns an array of one Object
     res = val[0];
     $(teamElement).empty();
     var wlr = "<p>Win Loss Ratio: " + res["W/L%"] + "</p>";
     var srs = "<p>Simple Rating: " + res["SRS"] + "</p>";
-    var ortg = "<p>Offensive Rating: " + res["ORtg"] + " (" + res["Rel ORtg"] + ")" + "</p>";
-    var drtg = "<p>Defensive Rating: " + res["DRtg"] + " (" + res["Rel DRtg"] + ")" + "</p>";
+    var ORTG = "<p>Offensive Rating: " + res["ORtg"] + " (" + res["Rel ORtg"] + ")" + "</p>";
+    var DRTG = "<p>Defensive Rating: " + res["DRtg"] + " (" + res["Rel DRtg"] + ")" + "</p>";
     var stats = null;
-    if (cardNumber === "1") {
-      stats1 = {"NAME": res["Team"].replace("*",""),
-                 "WLR": Number(res["W/L%"]), 
-                 "SRS": (Number(res["SRS"])+10)/10, 
-                 "ORtg": Number(res["ORtg"])/100, 
-                 "DRtg": Number(res["DRtg"])/100,
-               }
-    }
-    if (cardNumber === "2") {
-      stats2 = {"NAME": res["Team"].replace("*",""), 
-                  "WLR": Number(res["W/L%"]), 
-                  "SRS": (Number(res["SRS"])+10)/10, 
-                  "ORtg": Number(res["ORtg"])/100, 
-                  "DRtg": Number(res["DRtg"])/100
-               }
-    }
-    $(teamElement).append(wlr, srs, ortg, drtg);
+    $(teamElement).append(wlr, srs, ORTG, DRTG);
   });
 
   $.getJSON("/db/roster/statistics/misc/" + id + "/" + season, function(val) {
@@ -420,30 +412,23 @@ function getStatistics(cardNumber, teamElement, id, season) {
     } else {
       res = val[0][0];
     }
-    if (cardNumber === "1") {
-      stats1["TS%"] = Number(res["TRUE_SHOOTING%"]);
-      stats1["ORB%"] = Number(res["ORB%"])/100;
-      stats1["OPP_DRB%"] = Number(res["OPP_DRB%"])/100;
-      stats1["3PTAr"] = Number(res["3PT_ATTEMPT_RATE"]);
-      stats1["FTAr"] = Number(res["FT_ATTEMPT_RATE"]);
-      stats1["PACE"] = Number(res["PACE"])/100;
-      stats1["TOV%"] = Number(res["TOV%"])/100;
-      stats1["FTFGA%"] = Number(res["FT_PER_FIELDGOALATTEMPT%"]);
-      stats1["OPP_FTFGA%"] = Number(res["OPP_FT_PER_FIELDGOALATTEMPT%"]);
-    }
-    if (cardNumber === "2") {
-      stats2["TS%"] = Number(res["TRUE_SHOOTING%"]);
-      stats2["ORB%"] = Number(res["ORB%"])/100;
-      stats2["OPP_DRB%"] = Number(res["OPP_DRB%"])/100;
-      stats2["3PTAr"] = Number(res["3PT_ATTEMPT_RATE"]);
-      stats2["FTAr"] = Number(res["FT_ATTEMPT_RATE"]);
-      stats2["PACE"] = Number(res["PACE"])/100;
-      stats2["TOV%"] = Number(res["TOV%"])/100;
-      stats2["FTFGA%"] = Number(res["FT_PER_FIELDGOALATTEMPT%"]);
-      stats2["OPP_FTFGA%"] = Number(res["OPP_FT_PER_FIELDGOALATTEMPT%"]);
-    }
+    stats["TEAM"] = res["TEAM"].replace("*","");
+    stats["WLR"] = (Number(res["WIN"])/(Number(res["WIN"])+Number(res["LOSS"]))).toFixed(3);
+    stats["SRS"] = Number(res["SIMPLE_RATING_SYSTEM"]).toFixed(3);
+    stats["ORTG"] = Number(res["ORTG"]).toFixed(3);
+    stats["DRTG"] = Number(res["DRTG"]).toFixed(3);
+    stats["TS%"] = Number(res["TRUE_SHOOTING%"]).toFixed(3);
+    stats["ORB%"] = (Number(res["ORB%"])/100).toFixed(3);
+    stats["OPP_DRB%"] = (Number(res["OPP_DRB%"])/100).toFixed(3);
+    stats["3PTAr"] = Number(res["3PT_ATTEMPT_RATE"]).toFixed(3);
+    stats["FTAr"] = Number(res["FT_ATTEMPT_RATE"]).toFixed(3);
+    stats["PACE"] = Number(res["PACE"]).toFixed(3);
+    stats["TOV%"] = (Number(res["TOV%"])/100).toFixed(3);
+    stats["FTFGA%"] = Number(res["FT_PER_FIELDGOALATTEMPT%"]).toFixed(3);
+    stats["OPP_FTFGA%"] = Number(res["OPP_FT_PER_FIELDGOALATTEMPT%"]).toFixed(3);
+    stats["MOV"] = Number(res["MARGIN_OF_VICTORY"]).toFixed(3);
+    stats["NRTG"] = Number(res["NETRTG"]).toFixed(3);
   });
-
   // Get league avg
   $.getJSON("/db/roster/statistics/misc/0/" + season, function(val) {
     res = val[0]; // res may have to be val[0][0] ???
@@ -452,8 +437,8 @@ function getStatistics(cardNumber, teamElement, id, season) {
     } else {
       res = val[0][0];
     }
-    leagueAvgStats["ORtg"] = res["ORTG"];
-    leagueAvgStats["DRtg"] = res["DRTG"];
+    leagueAvgStats["ORTG"] = Number(res["ORTG"]).toFixed(3);
+    leagueAvgStats["DRTG"] = Number(res["DRTG"]).toFixed(3);
   });
 
   $.getJSON("/db/roster/statistics/advanced/" + id + "/" + season, function(val) {
@@ -488,56 +473,88 @@ function getStatistics(cardNumber, teamElement, id, season) {
     let per12 = "<p>Top 12 Adjusted PER: " + PER12.toFixed(2) + "</p>";
     
 
-    if (cardNumber === "1") {
-      stats1["PER5"] = PER5;
-      stats1["PER12"] = PER12;
-      updateRadar(currentTeamName, stats1, currentlySelected, id);
-    }
-    if (cardNumber === "2") {
-      stats2["PER5"] = PER5;
-      stats2["PER12"] = PER12;
-      updateRadar(currentTeamName, stats2, currentlySelected, id);
-    }
+    stats["PER5"] = PER5;
+    stats["PER12"] = PER12;
+    updateCharts(currentTeamName, stats, id);
     $(teamElement).append(per5, per12);
   });
 }
 
-function initRadar() {
-  // var color = d3.scale.ordinal()
-  //       .range(["#EDC951","#CC333F","#00A0B0"]);
-  var radarChartOptions = {
-      width: 500,
-      height: 500,
-      circles: {
-        maxValue: 1, 
-        levels: 5,
-      },
-      colors: radarColors
-  };
-  radarChart = RadarChart()
-  d3.select("#radarChart").call(radarChart);
-  radarChart.options(radarChartOptions).update();
+function initCharts() {
+  var ctx = document.getElementById('chart');
+  barChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ["Simple Rating System", "Offensive Rating (/10)", "Defensive Rating (/10)", "Margin of Victory", "Pace (Poss./48mins) (/10)", "Net Rating "],
+      datasets: [{label:"Home"},{label:"Away"}]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                ticks: {
+                    autoSkip: false,
+                    maxRotation: 35,
+                    minRotation: 35
+                }
+            }]
+        },
+        onHover: function () {
+          console.log("WEWW");
+        }
+    }
+  });
+  barChart.canvas.parentNode.style.height = '375px';
+  barChart.canvas.parentNode.style.width = '375px';
+  var radarCtx = document.getElementById('radarChart');
+  radarChart = new Chart(radarCtx, {
+    type: 'radar',
+    data: {
+      labels: ["WLR","FTAr","3PTAr","TS%", "ORB%", "OPP_DRB%", "TOV%"],
+      datasets: [{label:"Home"},{label:"Away"}]
+    }
+  });
+  radarChart.canvas.parentNode.style.height = '375px';
+  radarChart.canvas.parentNode.style.width = '375px';
 }
-
-function updateRadar(teamName, stats, currentlySelected, id) {
-  radarData[Number(currentlySelected)-1] = {  
-                      "key":teamName,
-                      "values":[  
-                         {axis:"Win Loss Ratio",value:stats["WLR"]},
-                         // {axis:"Simple Rating System",value:stats["SRS"]},
-                         // {axis:"Pace factor (Pos/48min)",value:stats["PACE"]},
-                         // {axis:"Offensive Rating",value:stats["ORtg"]},
-                         // {axis:"Defensive Rating",value:stats["DRtg"]},
-                         {axis:"Free Throw Attempt Rate",value:stats["FTAr"]},
-                         {axis:"3-Pt Attempt Rate",value:stats["3PTAr"]},
-                         {axis:"True Shooting %",value:stats["TS%"]},
-                         {axis:"Offense Rebound %",value:stats["ORB%"]},
-                         {axis:"Opponent Defensive Rebound %",value:stats["OPP_DRB%"]}
-                      ]
-                    }  
-  radarColors[Number(currentlySelected)-1] = {[teamName]:id_to_color[id]};
-  console.log(radarColors);
-  radarChart.colors(radarColors).update();
-  console.log(radarChart.colors());
-  radarChart.data(radarData).update();
+function updateCharts(teamName, stats, id) {
+  let bgHoverColor = [id_to_rgba_hover[id],id_to_rgba_hover[id],id_to_rgba_hover[id],id_to_rgba_hover[id],id_to_rgba_hover[id],id_to_rgba_hover[id],id_to_rgba_hover[id]];
+  let bgColor = [id_to_rgba_fade[id],id_to_rgba_fade[id],id_to_rgba_fade[id],id_to_rgba_fade[id],id_to_rgba_fade[id],id_to_rgba_fade[id],id_to_rgba_fade[id]];
+  let bdColor = [id_to_rgba_border[id],id_to_rgba_border[id],id_to_rgba_border[id],id_to_rgba_border[id],id_to_rgba_border[id],id_to_rgba_border[id],id_to_rgba_border[id]];
+  if (currentlySelected === "1") {
+    barChart.data.datasets[0] = {
+      label: teamName, 
+      data: [stats["SRS"], Number(stats["ORTG"]/10).toFixed(3), Number(stats["DRTG"]/10).toFixed(3), stats["MOV"], Number(stats["PACE"]/10).toFixed(3), stats["NRTG"]],
+      backgroundColor: bgColor,
+      hoverBackgroundColor: bgHoverColor,
+      borderColor: bdColor,
+      borderWidth: 1
+    };
+    radarChart.data.datasets[0] = {
+      label: teamName,
+      data: [stats["WLR"], stats["FTAr"], stats["3PTAr"], stats["TS%"], stats["ORB%"], stats["OPP_DRB%"], stats["TOV%"]],
+      backgroundColor: bgColor,
+      hoverBackgroundColor: bgHoverColor,
+      borderColor: bdColor,
+      borderWidth: 1
+    }
+  } else {
+    barChart.data.datasets[1] = {
+      label: teamName, 
+      data: [stats["SRS"], Number(stats["ORTG"]/10).toFixed(3), Number(stats["DRTG"]/10).toFixed(3), stats["MOV"], Number(stats["PACE"]/10).toFixed(3), stats["NRTG"]],
+      backgroundColor: bgColor,
+      hoverBackgroundColor: bgHoverColor,
+      borderColor: bdColor,
+      borderWidth: 1
+    };    
+    radarChart.data.datasets[1] = {
+      label: teamName,
+      data: [stats["WLR"], stats["FTAr"], stats["3PTAr"], stats["TS%"], stats["ORB%"], stats["OPP_DRB%"], stats["TOV%"]],
+      backgroundColor: bgColor,
+      hoverBackgroundColor: bgHoverColor,
+      borderColor: bdColor,
+      borderWidth: 1
+    }
+  }
+ barChart.update();
+ radarChart.update();
 }

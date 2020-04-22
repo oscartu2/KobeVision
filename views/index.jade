@@ -37,10 +37,10 @@ block content
           option(id='top12per') Top 12 PER
           option(id='team') Simple Rating System
           option(id='model') 538 CARM-ELO Rating
-        div.radarChart(id='radarChart')
         button(id='predictButton') Predict
-        p(id='predictionMethod') 
-      div.lds-circle
+        p(id='predictionMethod')
+      canvas.chart(id="chart", width="0", height="0")
+      canvas.radarChart(id="radarChart", width="0", height="0")
       
     // /PREDICTION METHOD
 

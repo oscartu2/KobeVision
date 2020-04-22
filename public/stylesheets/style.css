@@ -14,7 +14,7 @@ a {
 #wrapper {
 	padding-left:5em;
 	padding-right:10em;
-	width: 95em;
+	width: 120em;
 }
 
 #teamCard1 {
@@ -207,7 +207,7 @@ img {
 	left: 55em;
 }
 	.dropdown h2 {
-	  	width:34em;
+	  	width:50em;
 		height:28em;
 		position: absolute;
 		padding:15px;
@@ -282,7 +282,12 @@ img {
 .radarChart {
 	display: inline-block;
 	position: absolute;
-	left: 13.25em;
-	top: 5em;
-	font-weight: normal;
+	top: 10em;
+	left: 50em;
+}
+.chart {
+	display: inline-block;
+	position: absolute;
+	top: 13em;
+	left: 20em;
 }
