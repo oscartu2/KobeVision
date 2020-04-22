@@ -14,7 +14,7 @@ a {
 #wrapper {
 	padding-left:5em;
 	padding-right:10em;
-	width: 120em;
+	width: 127em;
 }
 
 #teamCard1 {
@@ -207,7 +207,7 @@ img {
 	left: 55em;
 }
 	.dropdown h2 {
-	  	width:50em;
+	  	width:55em;
 		height:28em;
 		position: absolute;
 		padding:15px;
@@ -253,7 +253,7 @@ img {
 	display: inline-block;
 	/*display: none;*/
 	position: relative;
-	left: 1em;
+	left: 8.4em;
 	top: -0.2em;
 	background-color: #f9f9f9;
   	min-width: 80px;
@@ -265,7 +265,7 @@ img {
 	display: inline-block;
 	/*display: none;*/
 	position: relative;
-	left: 1em;
+	left: 8.4em;
 	top: -0.2em;
 	background-color: #f9f9f9;
   	min-width: 80px;
@@ -279,15 +279,34 @@ img {
 .cell {
 	font-size: 18px;
 }
+.pieChart {
+	display: inline-block;
+	position: absolute;
+	top: 10em;
+	left: 3.5em;
+	max-width: 22em;
+	min-width: 22em;
+	z-index: 100;
+	visibility: hidden;
+}
 .radarChart {
 	display: inline-block;
 	position: absolute;
 	top: 10em;
-	left: 50em;
+	left: 55em;
 }
-.chart {
+.barChart {
 	display: inline-block;
 	position: absolute;
 	top: 13em;
-	left: 20em;
+	left: 25.5em;
+}
+.winnerLogo {
+	display: inline-block;
+	position: absolute;
+	top: 19.8em;
+	left: 8.67em;
+	max-width: 10.625em;
+	max-height: 10.625em;
+	visibility: hidden;
 }

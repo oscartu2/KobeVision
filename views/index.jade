@@ -9,6 +9,7 @@ block content
     div.card1(id='teamCard1')
       h2 Home
         select.card1Years(id='card1Year')
+          option(selected='true') Season
       img.cardLogo(id='teamLogo1', src='')
       div.container1
         h4(id='card1TeamName')
@@ -19,6 +20,7 @@ block content
     div.card2(id='teamCard2')
       h2 Away
         select.card2Years(id='card2Year')
+          option(selected='true') Season
       img.cardLogo(id='teamLogo2', src='')
       div.container2
         h4(id='card2TeamName')
@@ -29,7 +31,7 @@ block content
   
     // PREDICTION METHOD
     div.dropdown
-      h2 Prediction Method
+      h2 Prediction Method's Visualized
         select.dropdown-content(id='methods')
           option(selected='true') Instructions
           option(id='ratio') Win/Loss Ratio
@@ -39,8 +41,10 @@ block content
           option(id='model') 538 CARM-ELO Rating
         button(id='predictButton') Predict
         p(id='predictionMethod')
-      canvas.chart(id="chart", width="0", height="0")
+      canvas.pieChart(id="pieChart", width="0", height="0")
+      canvas.barChart(id="barChart", width="0", height="0")
       canvas.radarChart(id="radarChart", width="0", height="0")
+      img.winnerLogo(id="winnerLogo", src="")
       
     // /PREDICTION METHOD
 

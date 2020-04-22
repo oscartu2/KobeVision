@@ -131,7 +131,7 @@ let id_to_rgba_border = {
 				"40":"rgba(0, 43, 92, 1)",
 				"41":"rgba(227, 24, 55, 1)"
 }
-let welcomeMessage = "Welcome to KobeVision! To start, click on the home card, then select a team. Then, click on the away card, and select another team. Change the years in the drop down if you wish, and then choose a prediction method!";
+let welcomeMessage = "Welcome to KobeVision! <br><br>To start, click on the home card, then select a team. <br><br>Then, click on the away card, and select another team. <br><br>Change the years in the drop down if you wish, and then choose a prediction method!";
 let methodDescriptions = {
 						0: welcomeMessage,
 						1: "Predicts the winning team by using each team's win loss ratio as their chances of winning",
@@ -142,7 +142,6 @@ let methodDescriptions = {
 					}
 
 // Functions
-
 function calculateAge(dob) { 
     var date_array = dob.split("-")
     var years_elapsed = (new Date() - new Date(date_array[0],date_array[1],date_array[2]))/(MILLISECONDS_IN_A_YEAR);
