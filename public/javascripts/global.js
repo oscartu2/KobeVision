@@ -498,9 +498,10 @@ function initCharts() {
                 }
             }]
         },
-        onHover: function () {
-          console.log("WEWW");
-        }
+        // onHover: function () {
+        //   console.log("WEWW");
+        // }
+        // tooltip: 
     }
   });
   barChart.canvas.parentNode.style.height = '375px';
